@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+@theme {
+  --color-page: #f6f8fb;
+  --color-panel: #eef4fb;
+  --color-panel-strong: #dfeaf8;
+  --color-heading: #1d2a3a;
+  --color-copy: #526171;
+  --color-copy-soft: #718195;
+  --color-border: #d9e3ef;
+  --color-border-strong: #a9bfd8;
+  --color-accent: #3d78c5;
+  --color-accent-strong: #295c9e;
+  --color-accent-soft: #eaf2fb;
+  --color-gold: #9fc5ea;
+  --color-berry: #5aa6a6;
+}
+
+:root {
+  color-scheme: light;
+  font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", Arial, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--color-copy);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(61, 120, 197, 0.12), transparent 0 18%),
+    radial-gradient(circle at 88% 12%, rgba(90, 166, 166, 0.12), transparent 0 16%),
+    radial-gradient(circle at 80% 78%, rgba(159, 197, 234, 0.16), transparent 0 18%),
+    radial-gradient(circle at 18% 82%, rgba(216, 230, 245, 0.65), transparent 0 20%),
+    linear-gradient(180deg, #fcfdff 0%, #f4f8fc 38%, #f6f9fc 68%, #fbfdff 100%);
+  background-attachment: fixed;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.72), transparent 0 24%),
+    radial-gradient(circle at 72% 32%, rgba(255, 255, 255, 0.48), transparent 0 18%),
+    linear-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.18) 1px, transparent 1px);
+  background-size: auto, auto, 34px 34px, 34px 34px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.25) 65%, transparent 100%);
+  opacity: 0.75;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.88), transparent 0 22%),
+    radial-gradient(circle at 50% 100%, rgba(255, 244, 230, 0.48), transparent 0 20%);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}

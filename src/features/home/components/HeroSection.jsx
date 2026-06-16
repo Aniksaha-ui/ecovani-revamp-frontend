@@ -1,18 +1,27 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { heroSlides, trustPoints } from '../data/homeData'
 
-function HeroSection() {
+function HeroSection({ slides, trustPoints }) {
   const [activeSlide, setActiveSlide] = useState(0)
-  const currentSlide = heroSlides[activeSlide]
+  const slideCount = slides.length
+  const safeActiveSlide = slideCount ? activeSlide % slideCount : 0
+  const currentSlide = slides[safeActiveSlide]
 
   useEffect(() => {
+    if (!slideCount) {
+      return undefined
+    }
+
     const intervalId = window.setInterval(() => {
-      setActiveSlide((current) => (current + 1) % heroSlides.length)
+      setActiveSlide((current) => current + 1)
     }, 4500)
 
     return () => window.clearInterval(intervalId)
-  }, [])
+  }, [slideCount])
+
+  if (!currentSlide) {
+    return null
+  }
 
   return (
     <section className="mx-auto grid max-w-7xl gap-10 px-4 py-10 md:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:py-16">
@@ -47,14 +56,14 @@ function HeroSection() {
           </Link>
         </div>
         <div className="flex items-center gap-3">
-          {heroSlides.map((slide, index) => (
+          {slides.map((slide, index) => (
             <button
               key={slide.id}
               type="button"
               aria-label={`Show ${slide.title}`}
               onClick={() => setActiveSlide(index)}
               className={`h-3 rounded-full transition ${
-                index === activeSlide
+                index === safeActiveSlide
                   ? 'w-10 bg-[var(--color-accent)]'
                   : 'w-3 bg-[var(--color-border-strong)]'
               }`}
@@ -77,7 +86,7 @@ function HeroSection() {
         <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-[var(--color-gold)]/30 blur-3xl" />
         <div className="relative overflow-hidden rounded-[1.6rem]">
           <img
-            src="/default-hero-banner.svg"
+            src={currentSlide.image || '/default-hero-banner.svg'}
             alt="Featured ecommerce collection"
             className="h-[420px] w-full scale-[1.02] object-cover"
           />

@@ -1,6 +1,4 @@
-import { categories } from '../data/homeData'
-
-function CategoryHighlights() {
+function CategoryHighlights({ categories }) {
   return (
     <section className="mx-auto max-w-7xl px-4 py-6 md:px-6 lg:py-8">
       <div className="grid gap-4 md:grid-cols-3">

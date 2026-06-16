@@ -1,4 +1,4 @@
-export const heroSlides = [
+export const fallbackHeroSlides = [
   {
     id: 'audio',
     badge: 'Featured launch',
@@ -12,7 +12,8 @@ export const heroSlides = [
     panelDescription: 'Adaptive sound, 32h battery, and a travel-ready foldable build.',
     panelPrice: '$189',
     panelTag: 'Best seller',
-    accent: 'from-orange-300 via-amber-200 to-yellow-50',
+    accent: 'from-sky-300 via-cyan-200 to-blue-50',
+    image: '/default-hero-banner.svg',
   },
   {
     id: 'workspace',
@@ -27,7 +28,8 @@ export const heroSlides = [
     panelDescription: 'Glare-free lighting with warm and cool scenes for late-night focus.',
     panelPrice: '$96',
     panelTag: 'Editor choice',
-    accent: 'from-sky-300 via-cyan-200 to-blue-50',
+    accent: 'from-slate-200 via-sky-100 to-cyan-50',
+    image: '/default-hero-banner.svg',
   },
   {
     id: 'travel',
@@ -42,17 +44,12 @@ export const heroSlides = [
     panelDescription: 'A soft-shell organizer for chargers, cables, and quick-grab travel gear.',
     panelPrice: '$26',
     panelTag: 'New arrival',
-    accent: 'from-rose-300 via-orange-200 to-amber-50',
+    accent: 'from-teal-200 via-cyan-100 to-slate-50',
+    image: '/default-hero-banner.svg',
   },
 ]
 
-export const spotlightStats = [
-  { label: 'Happy shoppers', value: '24k+' },
-  { label: 'Curated brands', value: '120+' },
-  { label: 'Fast dispatch', value: '48 hrs' },
-]
-
-export const categories = [
+export const fallbackCategories = [
   {
     id: 'electronics',
     title: 'Electronics',
@@ -73,7 +70,7 @@ export const categories = [
   },
 ]
 
-export const productCollections = [
+export const fallbackProductCollections = [
   {
     id: 'electronics',
     eyebrow: 'Electronics',
@@ -97,7 +94,7 @@ export const productCollections = [
         price: '$129',
         originalPrice: '$149',
         rating: '4.7',
-        accent: 'from-orange-300 via-amber-200 to-yellow-100',
+        accent: 'from-slate-300 via-sky-200 to-cyan-100',
       },
       {
         id: 3,
@@ -106,7 +103,7 @@ export const productCollections = [
         price: '$96',
         originalPrice: '$118',
         rating: '4.9',
-        accent: 'from-slate-300 via-zinc-200 to-stone-100',
+        accent: 'from-zinc-200 via-slate-100 to-stone-50',
       },
       {
         id: 4,
@@ -115,7 +112,7 @@ export const productCollections = [
         price: '$74',
         originalPrice: '$89',
         rating: '4.6',
-        accent: 'from-emerald-300 via-lime-200 to-green-100',
+        accent: 'from-teal-300 via-cyan-200 to-blue-100',
       },
     ],
   },
@@ -133,7 +130,7 @@ export const productCollections = [
         price: '$42',
         originalPrice: '$54',
         rating: '4.7',
-        accent: 'from-rose-300 via-pink-200 to-orange-100',
+        accent: 'from-sky-200 via-indigo-100 to-slate-50',
       },
       {
         id: 6,
@@ -142,7 +139,7 @@ export const productCollections = [
         price: '$31',
         originalPrice: '$39',
         rating: '4.5',
-        accent: 'from-violet-300 via-fuchsia-200 to-pink-100',
+        accent: 'from-cyan-200 via-blue-100 to-slate-50',
       },
       {
         id: 7,
@@ -151,7 +148,7 @@ export const productCollections = [
         price: '$18',
         originalPrice: '$24',
         rating: '4.8',
-        accent: 'from-cyan-300 via-sky-200 to-blue-100',
+        accent: 'from-teal-200 via-cyan-100 to-blue-50',
       },
       {
         id: 8,
@@ -160,7 +157,7 @@ export const productCollections = [
         price: '$26',
         originalPrice: '$34',
         rating: '4.6',
-        accent: 'from-amber-300 via-orange-200 to-rose-100',
+        accent: 'from-slate-200 via-zinc-100 to-stone-50',
       },
     ],
   },
@@ -178,7 +175,7 @@ export const productCollections = [
         price: '$149',
         originalPrice: '$179',
         rating: '4.9',
-        accent: 'from-indigo-300 via-blue-200 to-cyan-100',
+        accent: 'from-blue-300 via-cyan-200 to-sky-100',
       },
       {
         id: 10,
@@ -187,7 +184,7 @@ export const productCollections = [
         price: '$68',
         originalPrice: '$82',
         rating: '4.7',
-        accent: 'from-lime-300 via-emerald-200 to-teal-100',
+        accent: 'from-teal-300 via-cyan-200 to-slate-100',
       },
       {
         id: 11,
@@ -196,7 +193,7 @@ export const productCollections = [
         price: '$36',
         originalPrice: '$48',
         rating: '4.6',
-        accent: 'from-red-300 via-orange-200 to-amber-100',
+        accent: 'from-sky-300 via-blue-200 to-cyan-100',
       },
       {
         id: 12,
@@ -205,7 +202,7 @@ export const productCollections = [
         price: '$119',
         originalPrice: '$146',
         rating: '4.8',
-        accent: 'from-teal-300 via-cyan-200 to-sky-100',
+        accent: 'from-cyan-300 via-sky-200 to-blue-100',
       },
     ],
   },

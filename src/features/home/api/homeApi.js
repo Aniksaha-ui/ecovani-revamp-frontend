@@ -15,36 +15,6 @@ const HOME_ENDPOINTS = {
   products: import.meta.env.VITE_HOME_PRODUCTS_ENDPOINT || 'users/products',
 }
 
-const HOME_COLLECTION_SEARCHES = [
-  {
-    id: 'electronics',
-    search: 'Electronics',
-    eyebrow: 'Electronics',
-    title: 'Smart upgrades for home and work',
-    description:
-      'Performance-first picks built to streamline your desk, studio, and commute.',
-    fallback: fallbackProductCollections[0],
-  },
-  {
-    id: 'accessories',
-    search: 'Accessories',
-    eyebrow: 'Accessories',
-    title: 'Finishing touches that travel well',
-    description:
-      'Compact, premium add-ons that make your devices easier to carry and enjoy.',
-    fallback: fallbackProductCollections[1],
-  },
-  {
-    id: 'trending',
-    search: 'Trending',
-    eyebrow: 'Trending Products',
-    title: 'What shoppers are picking today',
-    description:
-      'Fresh favorites from across the catalog, updated for a fast-moving storefront.',
-    fallback: fallbackProductCollections[2],
-  },
-]
-
 const cardAccents = [
   'from-sky-300 via-cyan-200 to-blue-50',
   'from-teal-300 via-cyan-200 to-sky-50',
@@ -211,20 +181,78 @@ function normalizeCategory(item, index) {
   }
 }
 
-function normalizeCollection(config, products) {
-  return {
-    id: config.id,
-    eyebrow: config.eyebrow,
-    title: config.title,
-    description: config.description,
-    products: (products.length ? products : config.fallback.products).slice(0, 4),
+function titleCaseWords(value) {
+  return String(value)
+    .split(' ')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
+function formatSectionLabel(sectionName) {
+  const normalized = String(sectionName || 'featured_products')
+    .replace(/[_-]+/g, ' ')
+    .trim()
+
+  if (!normalized) {
+    return 'Featured Products'
   }
+
+  if (normalized.toLowerCase() === 'trand product') {
+    return 'Trending Products'
+  }
+
+  return titleCaseWords(normalized)
+}
+
+function buildSectionDescription(sectionLabel, products) {
+  const categories = [...new Set(products.map((product) => product.subcategory || product.category))]
+    .filter(Boolean)
+    .slice(0, 2)
+
+  if (categories.length === 2) {
+    return `Browse ${categories[0].toLowerCase()} and ${categories[1].toLowerCase()} picks from the ${sectionLabel.toLowerCase()} collection.`
+  }
+
+  if (categories.length === 1) {
+    return `Browse curated ${categories[0].toLowerCase()} picks from the ${sectionLabel.toLowerCase()} collection.`
+  }
+
+  return `Browse curated picks from the ${sectionLabel.toLowerCase()} collection.`
+}
+
+function buildCollectionsFromSections(products) {
+  const sectionMap = new Map()
+
+  products.forEach((product) => {
+    const sectionName = product.sectionName || 'featured_products'
+
+    if (!sectionMap.has(sectionName)) {
+      sectionMap.set(sectionName, [])
+    }
+
+    sectionMap.get(sectionName).push(product)
+  })
+
+  return [...sectionMap.entries()].map(([sectionName, items]) => {
+    const sectionLabel = formatSectionLabel(sectionName)
+
+    return {
+      id: slugify(sectionName, `section-${sectionMap.size}`),
+      eyebrow: sectionLabel,
+      title: sectionLabel,
+      description: buildSectionDescription(sectionLabel, items),
+      products: items.slice(0, 8),
+    }
+  })
 }
 
 function normalizeProduct(item, index) {
   const name = readValue(item, ['name', 'title', 'product_name'], `Product ${index + 1}`)
   const basePrice = readValue(item, ['price', 'sale_price', 'discount_price'], 0)
-  const oldPrice = readValue(item, ['old_price', 'regular_price', 'price'], 0)
+  const oldPrice = readValue(item, ['old_price', 'regular_price'], 0)
+  const discountType = readValue(item, ['discount_type'], '')
+  const discountValue = Number(readValue(item, ['discount_value'], 0))
   const imagePath = readValue(
     item,
     [
@@ -245,6 +273,25 @@ function normalizeProduct(item, index) {
   )
   const image = extractProductImage(item)
   const rating = Number(readValue(item, ['rating', 'avg_rating', 'average_rating'], 4.7))
+  const stockQuantity = Number(readValue(item, ['stock_quantity', 'quantity', 'stock'], 0))
+  const normalizedPrice = Number(basePrice)
+  const derivedOriginalPrice = (() => {
+    const explicitOriginal = Number(oldPrice)
+
+    if (explicitOriginal > normalizedPrice) {
+      return explicitOriginal
+    }
+
+    if (discountType === 'percentage' && discountValue > 0 && normalizedPrice > 0) {
+      return normalizedPrice / (1 - discountValue / 100)
+    }
+
+    if (discountType === 'amount' && discountValue > 0 && normalizedPrice > 0) {
+      return normalizedPrice + discountValue
+    }
+
+    return 0
+  })()
 
   return {
     id: readValue(item, ['id', 'product_id', 'slug'], slugify(name, `product-${index + 1}`)),
@@ -254,8 +301,22 @@ function normalizeProduct(item, index) {
       ['category.name', 'category.title', 'category_name'],
       'General',
     ),
+    subcategory: readValue(
+      item,
+      ['subcategory.name', 'subcategory.title', 'subcategory_name'],
+      '',
+    ),
+    description: readValue(
+      item,
+      ['description', 'short_description', 'details'],
+      '',
+    ),
+    sectionName: readValue(item, ['section_name', 'section', 'section_title'], ''),
     price: formatPrice(basePrice) || '$0',
-    originalPrice: formatPrice(oldPrice),
+    originalPrice: formatPrice(derivedOriginalPrice),
+    discountType,
+    discountValue,
+    stockQuantity,
     rating: rating.toFixed(1),
     accent: cardAccents[index % cardAccents.length],
     imagePath,
@@ -292,6 +353,14 @@ function deriveSlidesFromProducts(products) {
 }
 
 function buildCollections(products) {
+  const sectionCollections = buildCollectionsFromSections(
+    products.filter((product) => product.sectionName),
+  )
+
+  if (sectionCollections.length) {
+    return sectionCollections
+  }
+
   const electronics = products.filter((product) =>
     ['electronics', 'audio', 'home tech', 'workspace', 'charging', 'networking', 'wearables']
       .some((keyword) => product.category.toLowerCase().includes(keyword)),
@@ -361,33 +430,8 @@ export async function fetchHomePageData() {
     ? categoriesData.slice(0, 3).map(normalizeCategory)
     : fallbackCategories
 
-  const searchedCollectionResults = await Promise.allSettled(
-    HOME_COLLECTION_SEARCHES.map((collection) =>
-      requestEndpoint(HOME_ENDPOINTS.products, {
-        params: {
-          search: collection.search,
-        },
-      }),
-    ),
-  )
-
-  const collectionsFromSearchApi = searchedCollectionResults
-    .map((result, index) => {
-      if (result.status !== 'fulfilled') {
-        return null
-      }
-
-      return normalizeCollection(
-        HOME_COLLECTION_SEARCHES[index],
-        result.value.map(normalizeProduct),
-      )
-    })
-    .filter(Boolean)
-
   const normalizedSlides = deriveSlidesFromProducts(normalizedProducts)
-  const normalizedCollections = collectionsFromSearchApi.length
-    ? collectionsFromSearchApi
-    : buildCollections(normalizedProducts)
+  const normalizedCollections = buildCollections(normalizedProducts)
 
   return {
     slides: normalizedSlides,
@@ -399,7 +443,6 @@ export async function fetchHomePageData() {
     sourceErrors: {
       categories: categoryResult.status === 'rejected',
       products: productResult.status === 'rejected',
-      searchedCollections: searchedCollectionResults.some((result) => result.status === 'rejected'),
     },
   }
 }

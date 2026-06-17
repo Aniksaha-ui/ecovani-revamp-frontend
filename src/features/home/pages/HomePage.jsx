@@ -31,6 +31,7 @@ function HomePage() {
       {data.collections.map((collection) => (
         <ProductShowcaseSection
           key={collection.id}
+          sectionId={collection.id}
           eyebrow={collection.eyebrow}
           title={collection.title}
           description={collection.description}

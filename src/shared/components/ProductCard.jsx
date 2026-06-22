@@ -22,32 +22,6 @@ function resolveProductImage(image) {
   return `${normalizedBase}${String(image).replace(/^\/+/, '')}`
 }
 
-function getProductMood(product) {
-  if (product.description) {
-    return product.description
-  }
-
-  const category = String(product.category || '').toLowerCase()
-  const name = String(product.name || '').toLowerCase()
-
-  if (category.includes('audio') || name.includes('headphone') || name.includes('speaker')) {
-    return 'Made for easy listening, soft detail, and everyday comfort.'
-  }
-
-  if (category.includes('workspace') || category.includes('desk') || name.includes('lamp')) {
-    return 'A calm desk essential that keeps your setup clean and inviting.'
-  }
-
-  if (category.includes('travel') || category.includes('case') || category.includes('pouch')) {
-    return 'Light, practical, and easy to carry wherever the day goes.'
-  }
-
-  if (category.includes('charging') || category.includes('tech') || category.includes('network')) {
-    return 'A tidy little upgrade that keeps daily routines feeling smoother.'
-  }
-
-  return 'A cozy everyday pick with a polished look and feel.'
-}
 
 function CartIcon({ className = 'h-5 w-5' }) {
   return (
@@ -81,8 +55,6 @@ function buildMetaLabel(product) {
 
 function ProductCard({ product, variant = 'default', sectionLabel = '' }) {
   const productImage = resolveProductImage(product.imagePath || product.image)
-  const productMood = getProductMood(product)
-  const accent = product.accent || 'from-sky-300 via-cyan-200 to-blue-50'
   const metaLabel = buildMetaLabel(product)
   const badgeLabel = sectionLabel || 'New Arrival'
   const isTrending = variant === 'trending'
@@ -93,140 +65,126 @@ function ProductCard({ product, variant = 'default', sectionLabel = '' }) {
 
   if (isTrending) {
     return (
-      <article className="group rounded-[18px] border border-[#eef2f6] bg-white p-4 shadow-[0_6px_18px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(15,23,42,0.12)]">
-        <div className="flex items-stretch gap-4">
-          <div className={`relative w-[46%] min-w-[145px] overflow-hidden rounded-[14px] border-4 border-white bg-gradient-to-br ${accent} p-3 shadow-[inset_0_0_0_1px_rgba(226,232,240,0.8)]`}>
-            <div className="absolute right-3 top-3">
-              {discountBadge ? (
-                <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#ff6557] text-center text-[10px] font-bold leading-[1.05] text-white shadow-[0_8px_16px_rgba(255,101,87,0.28)]">
-                  {Number(product.discountValue)}%
-                  <br />
-                  OFF
-                </span>
-              ) : (
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#f3f4f6] text-[#9aa4b2] shadow-[0_4px_10px_rgba(29,42,58,0.06)]">
-                  <HeartIcon className="h-4.5 w-4.5" />
-                </span>
-              )}
-            </div>
-            {productImage ? (
-              <img
-                src={productImage}
-                alt={product.name}
-                className="h-[138px] w-full rounded-[10px] object-contain bg-[#fbfdff] p-2 transition duration-500 group-hover:scale-[1.03]"
-              />
+      <article className="group relative flex flex-col sm:flex-row items-center gap-5 rounded-3xl bg-white/70 backdrop-blur-md p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/80 transition-all duration-500 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1">
+        <div className="relative h-36 w-full sm:w-36 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-slate-100 to-slate-50">
+          <div className="absolute right-2 top-2 z-10">
+            {discountBadge ? (
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-rose-400 to-red-500 text-[10px] font-bold text-white shadow-md shadow-red-500/20">
+                {discountBadge}
+              </span>
             ) : (
-              <div className="h-[138px] w-full rounded-[10px] bg-[#fbfdff]" />
+              <button className="flex h-8 w-8 items-center justify-center rounded-full bg-white/80 backdrop-blur-sm text-slate-400 shadow-sm transition-colors hover:text-red-500 hover:bg-white">
+                <HeartIcon className="h-4 w-4" />
+              </button>
             )}
           </div>
+          {productImage ? (
+            <img
+              src={productImage}
+              alt={product.name}
+              className="h-full w-full object-contain p-3 mix-blend-multiply transition-transform duration-700 group-hover:scale-110"
+            />
+          ) : (
+            <div className="h-full w-full bg-slate-100" />
+          )}
+        </div>
 
-          <div className="flex min-w-0 flex-1 flex-col justify-between py-1">
-            <div>
-              <h3 className="truncate text-[17px] leading-[1.2] font-semibold text-[#111827]">
-                {product.name}
-              </h3>
-              <p className="mt-1 text-[12px] text-[#8b97a7]">
-                {product.category} / {product.subcategory || product.category}
-              </p>
-              <p className="mt-3 text-[13px] leading-5 text-[#374151]">
-                {productMood}
-              </p>
-              <p className="mt-3 text-[17px] font-bold tracking-tight text-[#1483e8]">
-                {product.price}
-              </p>
+        <div className="flex flex-1 flex-col justify-between py-2 pr-2">
+          <div>
+            <h3 className="line-clamp-2 text-lg font-bold text-slate-800 leading-tight">
+              {product.name}
+            </h3>
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="text-xl font-extrabold text-indigo-600">{product.price}</span>
+              {product.originalPrice && (
+                <span className="text-sm font-medium text-slate-400 line-through">{product.originalPrice}</span>
+              )}
             </div>
-
-            <button
-              type="button"
-              className="mt-4 inline-flex h-9 w-full items-center justify-center gap-2 rounded-full bg-[#1483e8] px-4 text-[13px] font-medium text-white shadow-[0_10px_18px_rgba(20,131,232,0.24)] transition hover:-translate-y-0.5"
-            >
-              <CartIcon className="h-4.5 w-4.5" />
-              Add to Cart
-            </button>
           </div>
+
+          <button
+            type="button"
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-slate-900/20 transition-all duration-300 hover:bg-indigo-600 hover:shadow-indigo-500/30 sm:w-auto"
+          >
+            <CartIcon className="h-4.5 w-4.5" />
+            Add to Cart
+          </button>
         </div>
       </article>
     )
   }
 
   return (
-    <article className="group overflow-hidden rounded-[20px] border border-[#e8ecf2] bg-[#f8f9fb] p-3 shadow-[0_8px_20px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_28px_rgba(15,23,42,0.12)]">
-      <div className={`relative overflow-hidden rounded-[16px] bg-gradient-to-br ${accent} p-3`}>
-        <div className="absolute left-3 top-3 z-20">
-          <span className="inline-flex h-7 items-center rounded-[4px] bg-[#3b82f6] px-3 text-[12px] font-bold text-white shadow-[0_8px_14px_rgba(59,130,246,0.22)]">
+    <article className="group flex flex-col overflow-hidden rounded-3xl bg-white/70 backdrop-blur-md border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1">
+      <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-slate-100/80 to-slate-50/50 p-4">
+        <div className="absolute left-3 top-3 z-10">
+          <span className="inline-flex items-center rounded-xl bg-white/90 backdrop-blur-md px-3 py-1.5 text-xs font-bold text-slate-800 shadow-sm border border-white">
             {badgeLabel}
           </span>
         </div>
-        <div className="absolute right-3 top-3 z-20">
+        <div className="absolute right-3 top-3 z-10">
           <button
             type="button"
             aria-label={`Save ${product.name}`}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#94a3b8] shadow-[0_6px_14px_rgba(15,23,42,0.08)] transition hover:text-[var(--color-accent)]"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-slate-400 shadow-sm border border-white transition-all duration-300 hover:text-red-500 hover:bg-white hover:scale-105 active:scale-95"
           >
-            <HeartIcon className="h-4.5 w-4.5" />
+            <HeartIcon className="h-5 w-5" />
           </button>
         </div>
 
-        {discountBadge ? (
-          <div className="absolute bottom-[-2px] left-3 z-20">
-            <span className="inline-flex h-7 items-center rounded-[4px] bg-[linear-gradient(135deg,#ff815c,#ff5d5d)] px-2.5 text-[12px] font-bold text-white shadow-[0_8px_14px_rgba(255,99,92,0.26)]">
+        {discountBadge && (
+          <div className="absolute bottom-4 left-4 z-10">
+            <span className="inline-flex items-center rounded-xl bg-gradient-to-r from-rose-400 to-red-500 px-3 py-1.5 text-xs font-bold text-white shadow-lg shadow-red-500/30">
               {discountBadge}
             </span>
           </div>
-        ) : null}
+        )}
 
-        <div className="relative overflow-hidden rounded-[12px] bg-white/20">
-          {productImage ? (
-            <img
-              src={productImage}
-              alt={product.name}
-              className="h-[272px] w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-            />
-          ) : (
-            <div className="h-[272px] w-full bg-white/60" />
-          )}
-        </div>
+        {productImage ? (
+          <img
+            src={productImage}
+            alt={product.name}
+            className="h-full w-full object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-110"
+          />
+        ) : (
+          <div className="h-full w-full bg-slate-100" />
+        )}
       </div>
 
-      <div className="space-y-4 px-2 pb-2 pt-6">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-[12px] font-semibold uppercase tracking-[0.03em] text-[#75839a]">
+      <div className="flex flex-1 flex-col p-5">
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <p className="truncate text-[10px] font-extrabold text-indigo-500 uppercase tracking-widest">
             {metaLabel}
           </p>
-          {product.stockQuantity > 0 ? (
-            <span className="inline-flex rounded-full bg-[#ecf9ef] px-3 py-1 text-[12px] font-medium text-[#14a44d]">
-              In Stock
+          {product.stockQuantity > 0 && (
+            <span className="shrink-0 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">
+              IN STOCK
             </span>
-          ) : null}
+          )}
         </div>
 
-        <div className="space-y-2">
-          <h3 className="text-[18px] leading-[1.25] font-bold text-[#0f172a]">
-            {product.name}
-          </h3>
-          <p className="text-[14px] leading-6 text-[#64748b]">
-            {productMood}
-          </p>
-        </div>
+        <h3 className="line-clamp-2 text-lg font-bold leading-snug text-slate-800 mb-5">
+          {product.name}
+        </h3>
 
-        <div className="flex items-end gap-2">
-          <p className="text-[18px] font-bold tracking-tight text-[#0f172a] sm:text-[20px]">
-            {product.price}
-          </p>
-          {product.originalPrice ? (
-            <p className="pb-[2px] text-[14px] text-[#94a3b8] line-through">
-              {product.originalPrice}
-            </p>
-          ) : null}
+        <div className="mt-auto flex items-end justify-between gap-2">
+          <div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-extrabold tracking-tight text-slate-900">{product.price}</span>
+              {product.originalPrice && (
+                <span className="text-sm font-semibold text-slate-400 line-through">
+                  {product.originalPrice}
+                </span>
+              )}
+            </div>
+          </div>
+          <button
+            type="button"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg shadow-slate-900/20 transition-all duration-300 hover:scale-105 hover:bg-indigo-600 hover:shadow-indigo-500/30 active:scale-95"
+          >
+            <CartIcon className="h-5 w-5" />
+          </button>
         </div>
-
-        <button
-          type="button"
-          className="inline-flex h-[46px] w-full items-center justify-center gap-2 rounded-[14px] bg-[#172033] px-4 text-[15px] font-semibold text-white transition hover:bg-[#0f1728]"
-        >
-          <CartIcon className="h-5 w-5" />
-          Add to Cart
-        </button>
       </div>
     </article>
   )

@@ -5,8 +5,8 @@ function ProductGrid({ products, variant = 'default', sectionLabel = '' }) {
     <div
       className={
         variant === 'trending'
-          ? 'grid gap-5 md:grid-cols-2'
-          : 'grid gap-5 md:grid-cols-2 xl:grid-cols-4'
+          ? 'grid gap-4 md:grid-cols-2 xl:grid-cols-3'
+          : 'grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5'
       }
     >
       {products.map((product) => (

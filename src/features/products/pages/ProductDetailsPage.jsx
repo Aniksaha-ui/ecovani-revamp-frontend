@@ -279,21 +279,21 @@ function ProductDetailsPage() {
                 key={`${image || 'empty'}-${index}`}
                 type="button"
                 onClick={() => setActiveImageIndex(index)}
-                className={`flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-[1.1rem] border bg-white shadow-[0_10px_28px_rgba(15,23,42,0.06)] transition ${activeImageIndex === index ? 'border-[#2f66e0] ring-2 ring-[#2f66e0]/20' : 'border-[#edf1f7] hover:border-[#cdd7ea]'}`}
+                className={`flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-[1.1rem] border bg-white shadow-[0_10px_28px_rgba(15,23,42,0.06)] transition ${activeImageIndex === index ? 'border-[var(--color-accent)] ring-2 ring-[var(--color-accent)]/20' : 'border-[var(--color-border)] hover:border-[var(--color-border-strong)]'}`}
               >
                 {image ? (
                   <img src={image} alt={`${product.name} preview ${index + 1}`} className="h-full w-full object-cover" />
                 ) : (
-                  <div className="h-full w-full bg-[#f4f7fb]" />
+                  <div className="h-full w-full bg-[var(--color-accent-soft)]" />
                 )}
               </button>
             ))}
           </div>
 
-          <div className="order-1 rounded-[2rem] border border-[#e8edf5] bg-white p-8 shadow-[0_18px_50px_rgba(15,23,42,0.08)] md:order-2">
+          <div className="order-1 rounded-[2rem] border border-[var(--color-border)] bg-white p-8 shadow-[0_18px_50px_rgba(24,35,30,0.06)] md:order-2">
             <div className="flex justify-end">
               {product.discountType && product.discountValue > 0 ? (
-                <span className="inline-flex h-14 w-14 flex-col items-center justify-center rounded-full bg-[#ff5d54] text-center text-[11px] font-bold leading-[1.05] text-white shadow-[0_10px_24px_rgba(255,93,84,0.25)]">
+                <span className="inline-flex h-14 w-14 flex-col items-center justify-center rounded-full bg-[var(--color-heading)] text-center text-[11px] font-bold leading-[1.05] text-white shadow-[0_10px_24px_rgba(24,35,30,0.14)]">
                   {product.discountType === 'percentage' ? `${product.discountValue}%` : 'Save'}
                   <span className="text-[9px] font-semibold uppercase tracking-[0.08em]">Off</span>
                 </span>
@@ -307,61 +307,61 @@ function ProductDetailsPage() {
                 className="mx-auto mt-10 h-[22rem] w-full max-w-[26rem] object-contain"
               />
             ) : (
-              <div className="mx-auto mt-10 h-[22rem] w-full max-w-[26rem] rounded-[1.5rem] bg-[#f5f7fb]" />
+              <div className="mx-auto mt-10 h-[22rem] w-full max-w-[26rem] rounded-[1.5rem] bg-[var(--color-accent-soft)]" />
             )}
           </div>
         </div>
 
         <div>
           <div className="flex flex-wrap items-center gap-3 text-sm">
-            <span className="rounded-full bg-[#dff7e7] px-3 py-1 font-medium text-[#178b47]">
+            <span className="rounded-full bg-[var(--color-accent-soft)] px-3 py-1 font-medium text-[var(--color-accent)]">
               New Arrival
             </span>
             <span className="flex items-center gap-1 text-[var(--color-copy-soft)]">
-              <ShieldIcon className="h-4 w-4 text-[#2f66e0]" />
+              <ShieldIcon className="h-4 w-4 text-[var(--color-accent)]" />
               Top Rated
             </span>
           </div>
 
-          <h1 className="mt-3 text-[2.7rem] leading-[1.05] font-bold tracking-tight text-[#182235]">
+          <h1 className="mt-3 text-[2.7rem] leading-[1.05] font-bold tracking-tight text-[var(--color-heading)]">
             {product.name}
           </h1>
 
           <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
             <div className="flex items-center gap-3">
               <StarRating value={4.8} />
-              <span className="text-lg font-medium text-[#2f66e0]">4.8 (128 reviews)</span>
+              <span className="text-lg font-medium text-[var(--color-accent)]">4.8 (128 reviews)</span>
             </div>
-            <span className="text-[#d4dbe6]">|</span>
-            <span className="text-lg font-medium text-[#19a857]">
+            <span className="text-[var(--color-border-strong)]">|</span>
+            <span className="text-lg font-medium text-[var(--color-accent-strong)]">
               {isInStock ? `In Stock (${stockCount})` : 'Out of Stock'}
             </span>
           </div>
 
-          <div className="mt-7 rounded-[1.35rem] border border-[#e7edf6] bg-white px-5 py-4 shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
+          <div className="mt-7 rounded-[1.35rem] border border-[var(--color-border)] bg-white px-5 py-4 shadow-[0_10px_28px_rgba(24,35,30,0.05)]">
             <div className="flex flex-wrap items-end gap-3">
-              <p className="text-[2.2rem] leading-none font-bold tracking-tight text-[#2f66e0]">
+              <p className="text-[2.2rem] leading-none font-bold tracking-tight text-[var(--color-accent)]">
                 {product.price}
               </p>
               {product.originalPrice ? (
-                <p className="pb-1 text-[1.15rem] font-medium text-[#97a1b1] line-through">
+                <p className="pb-1 text-[1.15rem] font-medium text-[var(--color-copy-soft)] line-through">
                   {product.originalPrice}
                 </p>
               ) : null}
               {discountAmount > 0 ? (
-                <p className="pb-1 text-sm font-semibold text-[#19a857]">
+                <p className="pb-1 text-sm font-semibold text-[var(--color-accent-strong)]">
                   You save BDT {discountAmount.toFixed(2)}
                 </p>
               ) : null}
             </div>
           </div>
 
-          <p className="mt-7 text-[15px] leading-9 text-[#556275]">
+          <p className="mt-7 text-[15px] leading-9 text-[var(--color-copy)]">
             {product.description}
           </p>
 
-          <div className="mt-8 border-t border-[#e7edf6] pt-7">
-            <p className="text-base font-semibold text-[#202939]">Color</p>
+          <div className="mt-8 border-t border-[var(--color-border)] pt-7">
+            <p className="text-base font-semibold text-[var(--color-heading)]">Color</p>
             <div className="mt-4 flex items-center gap-3">
               {colorOptions.map((color, index) => (
                 <button
@@ -369,7 +369,7 @@ function ProductDetailsPage() {
                   type="button"
                   aria-label={`Select ${color.name} color`}
                   onClick={() => setActiveColor(index)}
-                  className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition ${activeColor === index ? 'border-[#2f66e0]' : 'border-transparent'}`}
+                  className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition ${activeColor === index ? 'border-[var(--color-accent)]' : 'border-transparent'}`}
                 >
                   <span className="h-9 w-9 rounded-full border border-black/5" style={{ backgroundColor: color.value }} />
                 </button>
@@ -378,21 +378,21 @@ function ProductDetailsPage() {
           </div>
 
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-            <div className="flex h-14 items-center rounded-[1rem] border border-[#d8e1ef] bg-white px-2 shadow-[0_8px_22px_rgba(15,23,42,0.05)]">
+            <div className="flex h-14 items-center rounded-[1rem] border border-[var(--color-border)] bg-white px-2 shadow-[0_8px_22px_rgba(24,35,30,0.05)]">
               <button
                 type="button"
                 onClick={() => changeQuantity(quantity - 1)}
-                className="flex h-10 w-10 items-center justify-center text-2xl text-[#66758a]"
+                className="flex h-10 w-10 items-center justify-center text-2xl text-[var(--color-copy-soft)]"
               >
                 -
               </button>
-              <span className="min-w-12 text-center text-xl font-semibold text-[#182235]">
+              <span className="min-w-12 text-center text-xl font-semibold text-[var(--color-heading)]">
                 {quantity}
               </span>
               <button
                 type="button"
                 onClick={() => changeQuantity(quantity + 1)}
-                className="flex h-10 w-10 items-center justify-center text-2xl text-[#66758a]"
+                className="flex h-10 w-10 items-center justify-center text-2xl text-[var(--color-copy-soft)]"
               >
                 +
               </button>
@@ -402,7 +402,7 @@ function ProductDetailsPage() {
               type="button"
               onClick={handleAddToCart}
               disabled={!isInStock}
-              className="inline-flex h-14 flex-1 items-center justify-center gap-3 rounded-[1rem] bg-[#2f66e0] px-6 text-xl font-semibold text-white shadow-[0_14px_32px_rgba(47,102,224,0.28)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-55"
+              className="inline-flex h-14 flex-1 items-center justify-center gap-3 rounded-[1rem] bg-[var(--color-heading)] px-6 text-xl font-semibold text-white shadow-[0_14px_32px_rgba(24,35,30,0.16)] transition hover:-translate-y-0.5 hover:bg-[var(--color-accent-strong)] disabled:cursor-not-allowed disabled:opacity-55"
             >
               <CartIcon className="h-6 w-6" />
               {buttonLabel}
@@ -411,7 +411,7 @@ function ProductDetailsPage() {
             <button
               type="button"
               aria-label="Save item"
-              className="inline-flex h-14 w-14 items-center justify-center rounded-[1rem] border border-[#d8e1ef] bg-white text-[#7d8999] shadow-[0_8px_22px_rgba(15,23,42,0.05)] transition hover:text-[#2f66e0]"
+              className="inline-flex h-14 w-14 items-center justify-center rounded-[1rem] border border-[var(--color-border)] bg-white text-[var(--color-copy-soft)] shadow-[0_8px_22px_rgba(24,35,30,0.05)] transition hover:text-[var(--color-accent)]"
             >
               <HeartIcon className="h-6 w-6" />
             </button>
@@ -423,15 +423,15 @@ function ProductDetailsPage() {
               : `SKU: ${product.sku}`}
           </div>
 
-          <div className="mt-8 grid gap-4 border-t border-[#e7edf6] pt-7 sm:grid-cols-2">
+          <div className="mt-8 grid gap-4 border-t border-[var(--color-border)] pt-7 sm:grid-cols-2">
             {benefitCards.map(({ title, subtitle, icon: Icon }) => (
               <div key={title} className="flex items-start gap-3">
-                <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#eff5ff] text-[#2f66e0]">
+                <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--color-accent-soft)] text-[var(--color-accent)]">
                   <Icon />
                 </div>
                 <div>
-                  <h2 className="text-[1.05rem] font-semibold text-[#1f2937]">{title}</h2>
-                  <p className="mt-0.5 text-[15px] text-[#6d7887]">{subtitle}</p>
+                  <h2 className="text-[1.05rem] font-semibold text-[var(--color-heading)]">{title}</h2>
+                  <p className="mt-0.5 text-[15px] text-[var(--color-copy-soft)]">{subtitle}</p>
                 </div>
               </div>
             ))}
@@ -440,13 +440,13 @@ function ProductDetailsPage() {
       </div>
 
       <div className="mt-14">
-        <div className="flex flex-wrap items-center gap-8 border-b border-[#dfe6f0]">
+        <div className="flex flex-wrap items-center gap-8 border-b border-[var(--color-border)]">
           {tabItems.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`border-b-2 pb-4 text-[1.05rem] font-medium transition ${activeTab === tab.id ? 'border-[#2f66e0] text-[#2f66e0]' : 'border-transparent text-[#6d7887]'}`}
+              className={`border-b-2 pb-4 text-[1.05rem] font-medium transition ${activeTab === tab.id ? 'border-[var(--color-accent)] text-[var(--color-accent)]' : 'border-transparent text-[var(--color-copy-soft)]'}`}
             >
               {tab.label}
             </button>
@@ -455,9 +455,9 @@ function ProductDetailsPage() {
 
         <div className="pt-9">
           {activeTab === 'details' ? (
-            <div className="space-y-7 text-[#556275]">
+            <div className="space-y-7 text-[var(--color-copy)]">
               <div>
-                <h2 className="text-[2rem] font-bold text-[#1f2937]">Elevate Your {product.category} Experience</h2>
+                <h2 className="text-[2rem] font-bold text-[var(--color-heading)]">Elevate Your {product.category} Experience</h2>
                 <div className="mt-5 space-y-4 text-[16px] leading-8">
                   {detailParagraphs.length ? (
                     detailParagraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)
@@ -468,7 +468,7 @@ function ProductDetailsPage() {
               </div>
 
               <div>
-                <h3 className="text-[1.65rem] font-bold text-[#1f2937]">Key Features:</h3>
+                <h3 className="text-[1.65rem] font-bold text-[var(--color-heading)]">Key Features:</h3>
                 <ul className="mt-4 space-y-3 text-[16px] leading-8">
                   <li><strong>Premium Build Quality:</strong> Made for daily use with a clean, durable finish.</li>
                   <li><strong>Comfort-Focused Design:</strong> Built to feel easy and natural during longer sessions.</li>
@@ -481,33 +481,33 @@ function ProductDetailsPage() {
           ) : null}
 
           {activeTab === 'specs' ? (
-            <div className="grid gap-4 rounded-[1.5rem] border border-[#e5ebf4] bg-white p-6 shadow-[0_12px_32px_rgba(15,23,42,0.05)] sm:grid-cols-2">
+            <div className="grid gap-4 rounded-[1.5rem] border border-[var(--color-border)] bg-white p-6 shadow-[0_12px_32px_rgba(24,35,30,0.05)] sm:grid-cols-2">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#8692a3]">Category</p>
-                <p className="mt-2 text-lg font-semibold text-[#1f2937]">{product.category}</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--color-copy-soft)]">Category</p>
+                <p className="mt-2 text-lg font-semibold text-[var(--color-heading)]">{product.category}</p>
               </div>
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#8692a3]">Subcategory</p>
-                <p className="mt-2 text-lg font-semibold text-[#1f2937]">{product.subcategory || 'General'}</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--color-copy-soft)]">Subcategory</p>
+                <p className="mt-2 text-lg font-semibold text-[var(--color-heading)]">{product.subcategory || 'General'}</p>
               </div>
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#8692a3]">SKU</p>
-                <p className="mt-2 text-lg font-semibold text-[#1f2937]">{product.sku}</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--color-copy-soft)]">SKU</p>
+                <p className="mt-2 text-lg font-semibold text-[var(--color-heading)]">{product.sku}</p>
               </div>
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#8692a3]">Available Stock</p>
-                <p className="mt-2 text-lg font-semibold text-[#1f2937]">{stockCount} units</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--color-copy-soft)]">Available Stock</p>
+                <p className="mt-2 text-lg font-semibold text-[var(--color-heading)]">{stockCount} units</p>
               </div>
             </div>
           ) : null}
 
           {activeTab === 'reviews' ? (
-            <div className="rounded-[1.5rem] border border-[#e5ebf4] bg-white p-6 shadow-[0_12px_32px_rgba(15,23,42,0.05)]">
+            <div className="rounded-[1.5rem] border border-[var(--color-border)] bg-white p-6 shadow-[0_12px_32px_rgba(24,35,30,0.05)]">
               <div className="flex items-center gap-3">
                 <StarRating value={4.8} />
-                <p className="text-xl font-semibold text-[#1f2937]">4.8 average from 128 customer reviews</p>
+                <p className="text-xl font-semibold text-[var(--color-heading)]">4.8 average from 128 customer reviews</p>
               </div>
-              <p className="mt-4 text-[16px] leading-8 text-[#556275]">
+              <p className="mt-4 text-[16px] leading-8 text-[var(--color-copy)]">
                 Shoppers consistently praise the product quality, pricing clarity, and reliable overall experience on the storefront.
               </p>
             </div>

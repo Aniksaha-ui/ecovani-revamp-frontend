@@ -1,68 +1,135 @@
-import { Link, NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const navItems = [
-  { to: '/', label: 'Home' },
-  { to: '/electronics', label: 'Electronics' },
-  { to: '/accessories', label: 'Accessories' },
-  { to: '/trending', label: 'Trending' },
+  'Home',
+  'About Us',
+  'Shop',
+  'Sellers',
+  'Mega Menu',
+  'Blog',
+  'Pages',
+  'Contact',
 ]
+
+function ChevronIcon({ className = 'h-4 w-4' }) {
+  return (
+    <svg className={className} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path strokeLinecap="round" strokeLinejoin="round" d="m5 7.5 5 5 5-5" />
+    </svg>
+  )
+}
 
 function SiteHeader() {
   return (
-    <header className="sticky top-6 z-40 w-full rounded-2xl bg-white/70 backdrop-blur-xl border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300">
-      <div className="flex h-16 items-center justify-between px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-lg font-bold text-white shadow-lg shadow-indigo-500/30 transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3">
-            E
-          </div>
-          <span className="text-xl font-bold tracking-tight text-slate-800 hidden sm:block bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-600">
-            Ecovani
-          </span>
-        </Link>
+    <header className="w-full overflow-hidden border-y border-[#d9dfeb] bg-white">
+      <div className="h-[6px] bg-[#0f8b86]" />
 
-        <div className="hidden flex-1 max-w-lg mx-8 md:block">
-          <div className="relative group">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+      <div className="border-b border-[#d9dfeb]">
+        <div className="mx-auto flex max-w-[1600px] items-center gap-6 px-6 py-5 lg:px-10">
+          <Link to="/" className="flex min-w-[260px] items-center">
+            <div className="flex items-center gap-3 text-[#0f8b86]">
+              <div className="flex h-[58px] w-[58px] items-center justify-center rounded-full bg-[#0f8b86] text-[34px] font-black text-white">
+                S
+              </div>
+              <div className="leading-none">
+                <div className="text-[62px] font-black tracking-[-0.05em] text-[#0f8b86]">
+                  Sellzy
+                </div>
+              </div>
             </div>
-            <input 
-              type="text" 
-              className="block w-full rounded-full border border-slate-200/60 bg-slate-50/50 py-2.5 pl-11 pr-4 text-sm outline-none transition-all duration-300 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 hover:bg-slate-50 shadow-inner" 
-              placeholder="Search products, brands and categories..." 
-            />
+          </Link>
+
+          <div className="flex flex-1 items-center justify-center">
+            <div className="relative w-full max-w-[805px]">
+              <input
+                type="text"
+                placeholder="Search for the Items"
+                className="h-[58px] w-full rounded-full border border-[#d5dbe7] bg-white pl-8 pr-16 text-[16px] font-medium text-[#6f7d97] outline-none transition focus:border-[#0f8b86]"
+              />
+              <div className="pointer-events-none absolute inset-y-0 right-6 flex items-center text-[#8d9ab1]">
+                <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <circle cx="11" cy="11" r="7" />
+                  <path strokeLinecap="round" d="m20 20-3.5-3.5" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div className="ml-auto flex items-center gap-8">
+            <div className="flex items-center gap-4">
+              <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#ffc107] text-[#111827]">
+                <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
+                  <circle cx="12" cy="8" r="3.2" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.5 18a5.5 5.5 0 0 1 11 0" />
+                </svg>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="leading-tight">
+                  <p className="text-[15px] font-medium text-[#5b6475]">Account</p>
+                  <p className="text-[32px] font-semibold tracking-[-0.04em] text-[#111827]">log in</p>
+                </div>
+                <ChevronIcon className="mt-4 h-5 w-5 text-[#111827]" />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#ffc107] text-[#111827]">
+                <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h2l1.5 8.2a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.7L20 7H7.1" />
+                  <circle cx="10" cy="19" r="1.6" />
+                  <circle cx="17.5" cy="19" r="1.6" />
+                </svg>
+              </div>
+              <div className="leading-tight">
+                <p className="text-[15px] font-medium text-[#5b6475]">Cart</p>
+                <p className="text-[32px] font-semibold tracking-[-0.04em] text-[#111827]">0- Items</p>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div className="flex items-center gap-2 sm:gap-4">
-          <nav className="hidden lg:flex items-center gap-1 mr-2 p-1 rounded-full bg-slate-50/80 border border-slate-100">
+      <div>
+        <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-6 px-6 py-[14px] lg:px-10">
+          <button className="inline-flex h-[48px] min-w-[264px] items-center justify-center gap-3 rounded-[8px] bg-[#0f8b86] px-6 text-[16px] font-bold text-white shadow-[0_8px_20px_rgba(15,139,134,0.2)]">
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="4" y="4" width="6" height="6" rx="1.2" />
+              <rect x="14" y="4" width="6" height="6" rx="1.2" />
+              <rect x="4" y="14" width="6" height="6" rx="1.2" />
+              <rect x="14" y="14" width="6" height="6" rx="1.2" />
+            </svg>
+            Explore All Categories
+            <ChevronIcon className="h-5 w-5" />
+          </button>
+
+          <nav className="flex flex-1 items-center justify-center gap-12">
             {navItems.map((item, index) => (
-              <NavLink
-                key={`${item.label}-${index}`}
-                to={item.to}
-                className={({ isActive }) => `relative rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-300 ${isActive ? 'text-indigo-700 bg-white shadow-sm' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100/50'}`}
+              <Link
+                key={item}
+                to="/"
+                className={`flex items-center gap-2 text-[16px] font-bold ${
+                  index === 0 ? 'text-[#0f8b86]' : 'text-[#111827]'
+                }`}
               >
-                {item.label}
-              </NavLink>
+                {item}
+                {['Home', 'Shop', 'Sellers', 'Mega Menu', 'Blog', 'Pages'].includes(item) ? (
+                  <ChevronIcon className="h-4 w-4" />
+                ) : null}
+              </Link>
             ))}
           </nav>
-          
-          <button className="relative flex items-center justify-center w-10 h-10 rounded-full text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-            <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white">
-              2
-            </span>
-          </button>
-          
-          <Link
-            to="/login"
-            className="hidden sm:inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-slate-900/20 transition-all hover:bg-slate-800 hover:scale-105 hover:shadow-xl hover:shadow-slate-900/30 active:scale-95"
-          >
-            Sign In
-          </Link>
+
+          <div className="flex min-w-[210px] items-center justify-end gap-4">
+            <div className="flex h-[48px] w-[48px] items-center justify-center rounded-full bg-[#f5f7fb] text-[#111827]">
+              <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 13a7.5 7.5 0 1 1 15 0v4A1.5 1.5 0 0 1 18 18.5h-2V13h3.5M8 18.5H6A1.5 1.5 0 0 1 4.5 17v-4H8v5.5Z" />
+              </svg>
+            </div>
+            <div className="leading-tight">
+              <p className="text-[14px] font-medium text-[#5b6475]">24/7 Support</p>
+              <p className="text-[16px] font-semibold text-[#111827]">888-777-999</p>
+            </div>
+          </div>
         </div>
       </div>
     </header>

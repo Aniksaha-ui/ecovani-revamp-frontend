@@ -8,7 +8,7 @@ function LoginForm() {
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-accent)]">
           Welcome back
         </p>
-        <h1 className="text-4xl font-semibold tracking-tight text-[var(--color-heading)]">
+        <h1 className="text-4xl font-bold tracking-tight text-[var(--color-heading)]">
           Sign in to your account
         </h1>
         <p className="text-base leading-7 text-[var(--color-copy-soft)]">
@@ -47,7 +47,7 @@ function LoginForm() {
 
       <button
         type="submit"
-        className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[var(--color-heading)] px-5 text-sm font-semibold text-white transition hover:-translate-y-0.5"
+        className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[var(--color-heading)] px-5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(24,35,30,0.14)] transition hover:bg-[var(--color-accent-strong)]"
       >
         Sign in
       </button>

@@ -1,26 +1,20 @@
 import { Outlet } from 'react-router-dom'
 import Footer from '../../shared/components/Footer'
 import SiteHeader from '../../shared/components/SiteHeader'
-import Sidebar from '../../shared/components/Sidebar'
 
 function MainLayout() {
   return (
-    <div className="relative min-h-screen bg-[#fafcff] text-slate-800 flex flex-col font-sans selection:bg-indigo-500/30">
-      {/* Ambient glowing background orbs */}
+    <div className="relative flex min-h-screen flex-col text-[var(--color-heading)] selection:bg-[var(--color-accent)]/20">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-blue-400/20 blur-[120px]" />
-        <div className="absolute top-[20%] -right-[10%] w-[40%] h-[60%] rounded-full bg-purple-400/20 blur-[120px]" />
-        <div className="absolute -bottom-[20%] left-[20%] w-[60%] h-[50%] rounded-full bg-teal-400/20 blur-[120px]" />
-        {/* Fine noise overlay for premium texture */}
-        <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')" }}></div>
+        <div className="absolute -left-[10%] top-0 h-[24rem] w-[24rem] rounded-full bg-[#dfeae4] blur-[120px]" />
+        <div className="absolute bottom-[-12%] right-[-6%] h-[22rem] w-[22rem] rounded-full bg-[#d4e1da] blur-[120px]" />
       </div>
 
-      <div className="relative z-10 flex flex-col min-h-screen">
-        <div className="pt-6 px-4 sm:px-6 lg:px-8 max-w-[1440px] mx-auto w-full">
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <div className="w-full">
           <SiteHeader />
         </div>
-        <div className="flex flex-1 mx-auto w-full max-w-[1440px] pt-8 px-4 sm:px-6 lg:px-8 gap-8">
-          <Sidebar />
+        <div className="mx-auto flex w-full max-w-[1320px] flex-1 px-4 pt-6 sm:px-6 lg:px-8">
           <main className="flex-1 pb-16">
             <Outlet />
           </main>

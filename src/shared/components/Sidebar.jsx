@@ -13,15 +13,12 @@ function Sidebar() {
   const location = useLocation()
 
   return (
-    <aside className="sticky top-28 hidden h-[calc(100vh-8rem)] w-[280px] flex-shrink-0 flex-col overflow-y-auto lg:flex">
-      <div className="flex flex-col rounded-3xl bg-white/70 backdrop-blur-2xl border border-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] relative overflow-hidden">
-        {/* Decorative inner glow */}
-        <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-indigo-500/10 blur-2xl pointer-events-none" />
-        
+    <aside className="sticky top-32 hidden h-[calc(100vh-9rem)] w-[280px] flex-shrink-0 flex-col overflow-y-auto xl:flex">
+      <div className="relative flex flex-col overflow-hidden rounded-[1.5rem] border border-[var(--color-border)] bg-white/92 p-6 shadow-[0_16px_36px_rgba(24,35,30,0.05)] backdrop-blur-2xl">
         <div className="mb-5 px-1">
-          <h2 className="text-[12px] font-extrabold uppercase tracking-[0.25em] text-slate-400/80">Discover</h2>
+          <h2 className="text-[12px] font-extrabold uppercase tracking-[0.25em] text-[var(--color-copy-soft)]">Browse Categories</h2>
         </div>
-        
+
         <nav className="flex-1 space-y-2 relative z-10">
           {categories.map((category) => {
             const isActive = location.pathname === category.path
@@ -29,41 +26,40 @@ function Sidebar() {
               <Link
                 key={category.name}
                 to={category.path}
-                className={`group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-300 ${
+                className={`group flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold transition-all duration-300 ${
                   isActive
-                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30'
-                    : 'text-slate-600 hover:bg-white hover:text-indigo-600 hover:shadow-md hover:-translate-y-0.5 border border-transparent hover:border-white'
+                    ? 'border-[var(--color-border)] bg-[var(--color-panel)] text-[var(--color-heading)]'
+                    : 'border-transparent text-[var(--color-copy)] hover:border-[var(--color-border)] hover:bg-[var(--color-page)] hover:text-[var(--color-heading)]'
                 }`}
               >
-                <svg className={`w-5 h-5 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={isActive ? "2" : "1.5"} d={category.icon} />
+                <svg className={`h-5 w-5 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={isActive ? '2' : '1.5'} d={category.icon} />
                 </svg>
                 {category.name}
               </Link>
             )
           })}
         </nav>
-        
-        <div className="mt-10 mb-5 px-1 relative z-10">
-          <h2 className="text-[12px] font-extrabold uppercase tracking-[0.25em] text-slate-400/80">Price Range</h2>
+
+        <div className="relative z-10 mb-5 mt-10 px-1">
+          <h2 className="text-[12px] font-extrabold uppercase tracking-[0.25em] text-[var(--color-copy-soft)]">Price Range</h2>
         </div>
-        
+
         <div className="space-y-5 relative z-10">
           <div className="flex items-center gap-3">
             <div className="relative w-full">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium text-xs">$</span>
-              <input type="number" placeholder="Min" className="w-full rounded-xl border border-slate-200/50 bg-white/50 pl-7 pr-3 py-2.5 text-sm font-medium text-slate-700 shadow-inner outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500/40 transition-all placeholder:font-normal" />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-[var(--color-copy-soft)]">$</span>
+              <input type="number" placeholder="Min" className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-page)] py-2.5 pl-7 pr-3 text-sm font-medium text-[var(--color-heading)] outline-none transition focus:bg-white focus:ring-2 focus:ring-[var(--color-accent)]/12 placeholder:font-normal" />
             </div>
-            <span className="text-slate-300 font-bold">-</span>
+            <span className="font-bold text-[var(--color-border-strong)]">-</span>
             <div className="relative w-full">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium text-xs">$</span>
-              <input type="number" placeholder="Max" className="w-full rounded-xl border border-slate-200/50 bg-white/50 pl-7 pr-3 py-2.5 text-sm font-medium text-slate-700 shadow-inner outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500/40 transition-all placeholder:font-normal" />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-[var(--color-copy-soft)]">$</span>
+              <input type="number" placeholder="Max" className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-page)] py-2.5 pl-7 pr-3 text-sm font-medium text-[var(--color-heading)] outline-none transition focus:bg-white focus:ring-2 focus:ring-[var(--color-accent)]/12 placeholder:font-normal" />
             </div>
           </div>
-          
-          <button className="relative w-full overflow-hidden rounded-xl bg-slate-900 px-4 py-3 text-xs font-bold text-white shadow-xl shadow-slate-900/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-indigo-500/30 active:scale-[0.98] group">
-            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <span className="relative z-10">Apply Filters</span>
+
+          <button className="w-full rounded-xl bg-[var(--color-heading)] px-4 py-3 text-xs font-bold uppercase tracking-[0.18em] text-white shadow-[0_12px_26px_rgba(24,35,30,0.14)] transition hover:bg-[var(--color-accent-strong)]">
+            Apply filters
           </button>
         </div>
       </div>

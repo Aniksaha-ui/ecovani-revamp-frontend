@@ -1,24 +1,24 @@
 @import "tailwindcss";
 
 @theme {
-  --color-page: #f6f8fb;
-  --color-panel: #eef4fb;
-  --color-panel-strong: #dfeaf8;
-  --color-heading: #1d2a3a;
-  --color-copy: #526171;
-  --color-copy-soft: #718195;
-  --color-border: #d9e3ef;
-  --color-border-strong: #a9bfd8;
-  --color-accent: #3d78c5;
-  --color-accent-strong: #295c9e;
-  --color-accent-soft: #eaf2fb;
-  --color-gold: #9fc5ea;
-  --color-berry: #5aa6a6;
+  --color-page: #f4f7f5;
+  --color-panel: #ecf2ee;
+  --color-panel-strong: #dbe7e0;
+  --color-heading: #18231e;
+  --color-copy: #4d5d56;
+  --color-copy-soft: #708078;
+  --color-border: #d8e1dc;
+  --color-border-strong: #b8c8c0;
+  --color-accent: #2d6a56;
+  --color-accent-strong: #1f4d3f;
+  --color-accent-soft: #e6f0eb;
+  --color-gold: #c9d8cf;
+  --color-berry: #477564;
 }
 
 :root {
   color-scheme: light;
-  font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", Arial, sans-serif;
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -38,12 +38,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 10% 10%, rgba(61, 120, 197, 0.12), transparent 0 18%),
-    radial-gradient(circle at 88% 12%, rgba(90, 166, 166, 0.12), transparent 0 16%),
-    radial-gradient(circle at 80% 78%, rgba(159, 197, 234, 0.16), transparent 0 18%),
-    radial-gradient(circle at 18% 82%, rgba(216, 230, 245, 0.65), transparent 0 20%),
-    linear-gradient(180deg, #fcfdff 0%, #f4f8fc 38%, #f6f9fc 68%, #fbfdff 100%);
+  background: linear-gradient(180deg, #f7faf8 0%, #f2f6f3 100%);
   background-attachment: fixed;
   position: relative;
 }
@@ -54,13 +49,11 @@ body::before {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.72), transparent 0 24%),
-    radial-gradient(circle at 72% 32%, rgba(255, 255, 255, 0.48), transparent 0 18%),
-    linear-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.18) 1px, transparent 1px);
-  background-size: auto, auto, 34px 34px, 34px 34px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.25) 65%, transparent 100%);
-  opacity: 0.75;
+    linear-gradient(rgba(255, 255, 255, 0.45) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.45) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.2), transparent 85%);
+  opacity: 0.18;
 }
 
 body::after {
@@ -69,10 +62,9 @@ body::after {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.88), transparent 0 22%),
-    radial-gradient(circle at 50% 100%, rgba(255, 244, 230, 0.48), transparent 0 20%);
-  mix-blend-mode: screen;
-  opacity: 0.7;
+    radial-gradient(circle at 10% 0%, rgba(227, 237, 232, 0.9), transparent 0 20%),
+    radial-gradient(circle at 90% 100%, rgba(216, 229, 222, 0.68), transparent 0 22%);
+  opacity: 0.5;
 }
 
 a {
@@ -87,4 +79,68 @@ input {
 
 #root {
   min-height: 100vh;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 34px, 0) scale(0.985);
+  transition:
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.reveal[data-reveal='left'] {
+  transform: translate3d(-34px, 0, 0) scale(0.985);
+}
+
+.reveal[data-reveal='right'] {
+  transform: translate3d(34px, 0, 0) scale(0.985);
+}
+
+.reveal[data-reveal='zoom'] {
+  transform: translate3d(0, 22px, 0) scale(0.94);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.elevated-section {
+  position: relative;
+}
+
+.elevated-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0));
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.ambient-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(60px);
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal,
+  .reveal[data-reveal='left'],
+  .reveal[data-reveal='right'],
+  .reveal[data-reveal='zoom'] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }

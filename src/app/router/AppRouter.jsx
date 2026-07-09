@@ -5,6 +5,7 @@ import HomePage from '../../features/home/pages/HomePage'
 import ProductDetailsPage from '../../features/products/pages/ProductDetailsPage'
 import CategoryProductsPage from '../../features/products/pages/CategoryProductsPage'
 import CartPage from '../../features/cart/pages/CartPage'
+import CheckoutPage from '../../features/checkout/pages/CheckoutPage'
 
 function AppRouter() {
   return (
@@ -12,6 +13,7 @@ function AppRouter() {
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/categories/:categoryId/products" element={<CategoryProductsPage />} />
         <Route path="/products/:productId" element={<ProductDetailsPage />} />
       </Route>

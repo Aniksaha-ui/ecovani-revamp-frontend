@@ -6,6 +6,9 @@ import apiClient from '../../../shared/lib/api/apiClient'
 const MY_CART_ENDPOINT = import.meta.env.VITE_MY_CART_ENDPOINT || 'users/mycart'
 const UPDATE_CART_ENDPOINT = import.meta.env.VITE_UPDATE_CART_ENDPOINT || 'users/update/cart'
 const REMOVE_CART_ENDPOINT = import.meta.env.VITE_REMOVE_CART_ENDPOINT || 'users/remove/cart'
+const IMAGE_BASE_URL = (import.meta.env.VITE_IMAGE_URL || '')
+  .replaceAll('"', '')
+  .replace(/\s+/g, '')
 
 function extractArray(payload) {
   if (Array.isArray(payload)) {
@@ -36,11 +39,39 @@ function normalizeCartItem(item, index) {
     name: item?.name || item?.product?.name || `Product ${index + 1}`,
     price: formatCurrency(rawPrice),
     rawPrice,
-    image: item?.image || item?.product?.image || item?.product?.primary_image || '',
+    image: buildImageUrl(
+      item?.image ||
+      item?.image_url ||
+      item?.primary_image ||
+      item?.product?.image_url ||
+      item?.product?.image ||
+      item?.product?.primary_image ||
+      '',
+    ),
     category: item?.category || item?.product?.category_name || item?.product?.category?.name || 'Store item',
     quantity: Number(item?.quantity || 0),
     cartId: item?.cart_id || '',
   }
+}
+
+function buildImageUrl(path) {
+  if (!path) {
+    return ''
+  }
+
+  if (/^https?:\/\//i.test(path) || String(path).startsWith('/default-')) {
+    return path
+  }
+
+  if (!IMAGE_BASE_URL) {
+    return `/${String(path).replace(/^\/+/, '')}`
+  }
+
+  const normalizedBase = IMAGE_BASE_URL.endsWith('/')
+    ? IMAGE_BASE_URL
+    : `${IMAGE_BASE_URL}/`
+
+  return `${normalizedBase}${String(path).replace(/^\/+/, '')}`
 }
 
 function formatCurrency(value) {
@@ -374,12 +405,12 @@ function CartPage() {
             </div>
           </div>
 
-          <button
-            type="button"
+          <Link
+            to="/checkout"
             className="mt-6 inline-flex min-h-14 w-full items-center justify-center gap-3 rounded-full bg-[#0f8b86] px-5 text-sm font-extrabold uppercase tracking-[0.16em] text-white shadow-[0_16px_28px_rgba(15,139,134,0.22)] transition hover:-translate-y-0.5 hover:bg-[#0b7672]"
           >
             Proceed to checkout
-          </button>
+          </Link>
 
           <Link
             to="/"

@@ -4,6 +4,7 @@ import { getStoredAuthToken } from '../../auth/lib/authStorage'
 
 const CART_STORAGE_KEY = 'ecovani-cart'
 const ADD_CART_ENDPOINT = import.meta.env.VITE_ADD_CART_ENDPOINT || 'users/add/cart'
+const MY_CART_ENDPOINT = import.meta.env.VITE_MY_CART_ENDPOINT || 'users/mycart'
 const DEFAULT_API_TOKEN = (import.meta.env.VITE_API_TOKEN || '')
   .replaceAll('"', '')
   .trim()
@@ -48,8 +49,72 @@ function syncLocalItem(currentItems, product, quantity) {
   ]
 }
 
+function extractArray(payload) {
+  if (Array.isArray(payload)) {
+    return payload
+  }
+
+  if (Array.isArray(payload?.data)) {
+    return payload.data
+  }
+
+  if (Array.isArray(payload?.data?.data)) {
+    return payload.data.data
+  }
+
+  if (Array.isArray(payload?.result)) {
+    return payload.result
+  }
+
+  return []
+}
+
+function normalizeServerCartItem(item) {
+  return {
+    id: item?.product_id || item?.id,
+    cartItemId: item?.id,
+    name: item?.name || 'Product',
+    price: item?.price ? `BDT ${item.price}` : 'BDT 0',
+    rawPrice: Number(item?.price || 0),
+    image: item?.image || item?.image_url || item?.primary_image || '',
+    category: item?.category || 'Store item',
+    quantity: Number(item?.quantity || 0),
+  }
+}
+
 function CartProvider({ children }) {
   const [items, setItems] = useState(() => readStoredCart())
+
+  useEffect(() => {
+    const authToken = getStoredAuthToken() || DEFAULT_API_TOKEN
+
+    if (!authToken) {
+      return
+    }
+
+    let isMounted = true
+
+    async function loadServerCart() {
+      try {
+        const response = await apiClient.get(MY_CART_ENDPOINT)
+        const nextItems = extractArray(response.data).map(normalizeServerCartItem)
+
+        if (!isMounted) {
+          return
+        }
+
+        setItems(nextItems)
+      } catch {
+        // Keep local cart state when the API is unavailable.
+      }
+    }
+
+    loadServerCart()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   useEffect(() => {
     window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
@@ -77,6 +142,16 @@ function CartProvider({ children }) {
               quantity: normalizedQuantity,
             },
           ])
+
+          try {
+            const response = await apiClient.get(MY_CART_ENDPOINT)
+            const nextItems = extractArray(response.data).map(normalizeServerCartItem)
+            setItems(nextItems)
+            return
+          } catch {
+            setItems((currentItems) => syncLocalItem(currentItems, product, normalizedQuantity))
+            return
+          }
         }
 
         setItems((currentItems) => syncLocalItem(currentItems, product, normalizedQuantity))

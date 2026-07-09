@@ -33,7 +33,7 @@ function SiteHeader() {
               </div>
               <div className="leading-none">
                 <div className="text-[62px] font-black tracking-[-0.05em] text-[#0f8b86]">
-                  Sellzy
+                  Ecovani
                 </div>
               </div>
             </div>

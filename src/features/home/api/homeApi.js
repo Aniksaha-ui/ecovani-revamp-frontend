@@ -404,6 +404,96 @@ function buildCollections(products) {
   ]
 }
 
+function cycleItems(items, count, start = 0) {
+  if (!items.length) {
+    return []
+  }
+
+  return Array.from({ length: count }, (_, index) => items[(start + index) % items.length])
+}
+
+function buildHeroPanel(products) {
+  const heroProduct = products[0] || fallbackProductCollections[0].products[0]
+  const spotlightCards = cycleItems(products, 2, 1).map((product, index) => ({
+    id: `spotlight-${product.id}-${index}`,
+    eyebrow: index === 0 ? 'Daily Pick' : 'Click. Shop. Smile.',
+    title: index === 0 ? 'Your Daily Store' : 'Soft Care Essentials',
+    description: product.name,
+    ctaLabel: 'Shop Now',
+    image: product.image || '/default-hero-banner.svg',
+    background: index === 0 ? '#fcebd7' : '#e7f8ef',
+  }))
+
+  return {
+    eyebrow: 'New Exclusive Offer',
+    title: 'Beauty That Elevates Your Everyday',
+    description:
+      'Discover premium makeup, skincare essentials, and wellness-first daily care designed for modern routines.',
+    primaryCta: 'Shop Now',
+    secondaryCta: 'View Details',
+    image: heroProduct.image || '/default-hero-banner.svg',
+    spotlightCards,
+  }
+}
+
+function buildCategoryRail(products, categories) {
+  return cycleItems(products, 6, 0).map((product, index) => ({
+    id: `category-rail-${product.id}-${index}`,
+    title: categories[index]?.title || product.category || 'Beauty Care',
+    image: product.image || '/default-hero-banner.svg',
+  }))
+}
+
+function buildHomepageSections(products, categories) {
+  const fallbackProducts = fallbackProductCollections.flatMap((collection) => collection.products)
+  const sourceProducts = products.length ? products : fallbackProducts
+
+  return {
+    hero: buildHeroPanel(sourceProducts),
+    categoryRail: buildCategoryRail(sourceProducts, categories),
+    flashDeal: {
+      title: 'Flash Fashion Deal',
+      tabs: ["Men's Fashion", "Women's Fashion", 'Kids Clothing', 'Accessories', 'Jewelry & Watches'],
+      products: cycleItems(sourceProducts, 5, 0),
+    },
+    mostLoved: {
+      title: 'Most Loved Products',
+      products: cycleItems(sourceProducts, 5, 2),
+    },
+    featurePromos: cycleItems(sourceProducts, 4, 3),
+    newLaunch: {
+      title: 'Newly Lunch Products',
+      products: cycleItems(sourceProducts, 5, 4),
+    },
+    allProducts: {
+      title: 'Our Products',
+      tabs: ['All Products', 'Moisturizers', 'Sunscreen', 'Foundations', 'Lipsticks & Lip Gloss'],
+      products: cycleItems(sourceProducts, 10, 1),
+    },
+    limitedDeal: {
+      title: 'Limited Time Deals',
+      featured: cycleItems(sourceProducts, 1, 5)[0],
+      topRate: cycleItems(sourceProducts, 3, 0),
+      topItems: cycleItems(sourceProducts, 3, 4),
+    },
+    categoryFavorites: cycleItems(sourceProducts, 4, 3),
+    beautyCare: {
+      title: 'Beauty Care Products',
+      products: cycleItems(sourceProducts, 5, 5),
+    },
+    latestBlog: cycleItems(sourceProducts, 4, 2),
+    brands: ['MERCK', 'NORTON', 'Abbott', 'Davita', 'MERCK', 'Abbott', 'Davita', 'NORTON'],
+    featureItems: [
+      'Cruelty Free',
+      'Premium Quality',
+      'Secure Payment',
+      'Gift Ready',
+      '24/7 Support',
+      'Fast Delivery',
+    ],
+  }
+}
+
 async function requestEndpoint(endpoint, config = {}) {
   if (!endpoint) {
     return []
@@ -427,16 +517,18 @@ export async function fetchHomePageData() {
     : fallbackProductCollections.flatMap((collection) => collection.products)
 
   const normalizedCategories = categoriesData.length
-    ? categoriesData.slice(0, 3).map(normalizeCategory)
+    ? categoriesData.slice(0, 6).map(normalizeCategory)
     : fallbackCategories
 
   const normalizedSlides = deriveSlidesFromProducts(normalizedProducts)
   const normalizedCollections = buildCollections(normalizedProducts)
+  const homepage = buildHomepageSections(normalizedProducts, normalizedCategories)
 
   return {
     slides: normalizedSlides,
     categories: normalizedCategories,
     collections: normalizedCollections,
+    homepage,
     trustPoints,
     usingFallback:
       !categoriesData.length && !productsData.length,

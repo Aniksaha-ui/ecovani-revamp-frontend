@@ -29,14 +29,6 @@ function productImage(product) {
   return buildImageUrl(product?.imagePath || product?.image)
 }
 
-function takeProducts(products, start, count) {
-  if (!products.length) {
-    return []
-  }
-
-  return Array.from({ length: count }, (_, index) => products[(start + index) % products.length])
-}
-
 function HomeSectionTitle({ title, action = 'View More Products' }) {
   return (
     <div className="mb-5 flex items-center justify-between gap-4">
@@ -78,26 +70,19 @@ function ProductTabsSection({ title, tabs, activeTab = 0, children }) {
 
 function HomePage() {
   const { isLoading, error, data } = useHomePageData()
-  const allProducts = data.collections.flatMap((collection) => collection.products || [])
-  const sidePromoA = allProducts[1]
-  const sidePromoB = allProducts[2]
-  const categoryProducts = takeProducts(allProducts, 0, Math.max(6, data.categories.length || 6))
-  const topOfferProducts = takeProducts(allProducts, 0, 5)
-  const mostLovedProducts = takeProducts(allProducts, 2, 5)
-  const newLaunchProducts = takeProducts(allProducts, 4, 5)
-  const ourProducts = takeProducts(allProducts, 1, 10)
-  const beautyProducts = takeProducts(allProducts, 5, 5)
-  const blogProducts = takeProducts(allProducts, 2, 4)
-  const favoriteProducts = takeProducts(allProducts, 3, 4)
-  const featureItems = [
-    'Cruelty Free',
-    'Premium Quality',
-    'Secure Payment',
-    'Gift Ready',
-    '24/7 Support',
-    'Fast Delivery',
-  ]
-  const brands = ['MERCK', 'NORTON', 'Abbott', 'Davita', 'MERCK', 'Abbott', 'Davita', 'NORTON']
+  const { homepage } = data
+  const hero = homepage.hero || {}
+  const flashDeal = homepage.flashDeal || { title: '', tabs: [], products: [] }
+  const mostLoved = homepage.mostLoved || { title: '', products: [] }
+  const newLaunch = homepage.newLaunch || { title: '', products: [] }
+  const allProducts = homepage.allProducts || { title: '', tabs: [], products: [] }
+  const limitedDeal = homepage.limitedDeal || { title: '', featured: null, topRate: [], topItems: [] }
+  const beautyCare = homepage.beautyCare || { title: '', products: [] }
+  const featurePromos = homepage.featurePromos || []
+  const featureItems = homepage.featureItems || []
+  const brands = homepage.brands || []
+  const categoryFavorites = homepage.categoryFavorites || []
+  const latestBlog = homepage.latestBlog || []
 
   return (
     <div className="space-y-8">
@@ -141,19 +126,17 @@ function HomePage() {
                 Get up to 30% of on your first $150 purchase
               </p>
               <h1 className="mt-7 max-w-[560px] text-[62px] font-black leading-[1.06] tracking-[-0.05em] text-black">
-                Wrap Yourself
-                <br />
-                in Winter Elegance
+                {hero?.title || 'Wrap Yourself'}
               </h1>
               <p className="mt-6 text-[17px] font-medium text-black/82">
-                Handcrafted designs &amp; premium fabrics for a timeless look.
+                {hero?.description || 'Handcrafted designs & premium fabrics for a timeless look.'}
               </p>
               <div className="mt-8">
                 <Link
                   to="/"
                   className="inline-flex items-center gap-4 rounded-full bg-[#0f8b86] px-5 py-4 text-[16px] font-extrabold text-white shadow-[0_14px_28px_rgba(15,139,134,0.22)]"
                 >
-                  <span>Shop Now</span>
+                  <span>{hero?.primaryCta || 'Shop Now'}</span>
                   <span className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-white text-[#0f8b86]">
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M7 17 17 7M9 7h8v8" />
@@ -165,7 +148,7 @@ function HomePage() {
 
             <div className="relative min-h-[598px] overflow-hidden">
               <img
-                src={heroBannerImage}
+                src={hero?.image || heroBannerImage}
                 alt="Fashion model in winter elegance hero banner"
                 className="absolute inset-0 h-full w-full object-contain object-right-bottom"
               />
@@ -184,31 +167,31 @@ function HomePage() {
         </RevealOnScroll>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          {[sidePromoA, sidePromoB].map((product, index) => (
+          {(hero?.spotlightCards || []).map((card, index) => (
             <RevealOnScroll
-              key={`${product?.id || index}-promo`}
+              key={`${card?.id || index}-promo`}
               className="grid min-h-[190px] grid-cols-[1fr_0.9fr] overflow-hidden rounded-[1.5rem] bg-white shadow-[0_16px_34px_rgba(36,54,46,0.08)] transition hover:-translate-y-1 hover:shadow-[0_22px_42px_rgba(36,54,46,0.1)]"
               direction="right"
               delay={index * 120}
             >
               <div className="p-5">
                 <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#ff7e88]">
-                  {index === 0 ? 'Daily Pick' : 'Click. Shop. Smile.'}
+                  {card?.eyebrow}
                 </p>
                 <h3 className="mt-3 text-2xl font-extrabold leading-tight text-[var(--color-heading)]">
-                  {index === 0 ? 'Your Daily Store' : 'Soft Care Essentials'}
+                  {card?.title}
                 </h3>
                 <p className="mt-3 text-sm leading-6 text-[var(--color-copy)]">
-                  {product?.name || 'Curated beauty basics for everyday use.'}
+                  {card?.description || 'Curated beauty basics for everyday use.'}
                 </p>
                 <button className="mt-5 rounded-full bg-[var(--color-accent)] px-4 py-2 text-xs font-bold text-white">
-                  Shop Now
+                  {card?.ctaLabel || 'Shop Now'}
                 </button>
               </div>
-              <div className={index === 0 ? 'bg-[#fcebd7]' : 'bg-[#e7f8ef]'}>
+              <div style={{ backgroundColor: card?.background || '#fcebd7' }}>
                 <img
-                  src={productImage(product)}
-                  alt={product?.name || 'Store promo'}
+                  src={card?.image || '/default-hero-banner.svg'}
+                  alt={card?.title || 'Store promo'}
                   className="h-full w-full object-contain p-4"
                 />
               </div>
@@ -220,18 +203,18 @@ function HomePage() {
       <RevealOnScroll as="section" delay={40}>
         <HomeSectionTitle title="Shop By Category" action=" " />
         <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
-          {categoryProducts.slice(0, 6).map((product, index) => (
+          {(homepage.categoryRail || []).slice(0, 6).map((item, index) => (
             <RevealOnScroll
-              key={`category-${product.id}-${index}`}
+              key={`category-${item.id}-${index}`}
               className="text-center transition hover:-translate-y-1"
               delay={index * 70}
               direction="zoom"
             >
               <div className="mx-auto flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-[#fdeff5] shadow-[0_8px_18px_rgba(36,54,46,0.06)] transition duration-300 hover:shadow-[0_14px_28px_rgba(36,54,46,0.1)]">
-                <img src={productImage(product)} alt={product.name} className="h-full w-full object-cover" />
+                <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
               </div>
               <p className="mt-3 text-sm font-bold text-[var(--color-heading)]">
-                {data.categories[index]?.title || product.category || 'Beauty Care'}
+                {item.title}
               </p>
             </RevealOnScroll>
           ))}
@@ -239,15 +222,15 @@ function HomePage() {
       </RevealOnScroll>
 
       <ProductTabsSection
-        title="Flash Fashion Deal"
-        tabs={["Men's Fashion", "Women's Fashion", 'Kids Clothing', 'Accessories', 'Jewelry & Watches']}
+        title={flashDeal.title}
+        tabs={flashDeal.tabs}
       >
-        <ProductGrid products={topOfferProducts} sectionLabel="Top Offer" />
+        <ProductGrid products={flashDeal.products} sectionLabel="Top Offer" />
       </ProductTabsSection>
 
       <RevealOnScroll as="section" delay={70}>
-        <HomeSectionTitle title="Most Loved Products" />
-        <ProductGrid products={mostLovedProducts} sectionLabel="Most Loved" />
+        <HomeSectionTitle title={mostLoved.title} />
+        <ProductGrid products={mostLoved.products} sectionLabel="Most Loved" />
       </RevealOnScroll>
 
       <section className="grid gap-4 md:grid-cols-3">
@@ -264,7 +247,7 @@ function HomePage() {
             direction="zoom"
           >
             <div className="h-52 bg-[#eef7f3]">
-              <img src={productImage(favoriteProducts[index])} alt={promo.title} className="h-full w-full object-cover" />
+              <img src={productImage(featurePromos[index])} alt={promo.title} className="h-full w-full object-cover" />
             </div>
             <div className={`p-5 ${promo.bg}`}>
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--color-heading)]">Daily care</p>
@@ -296,7 +279,7 @@ function HomePage() {
       <section className="grid gap-4 lg:grid-cols-[0.95fr_1.25fr]">
         <RevealOnScroll as="article" className="overflow-hidden rounded-[1.6rem] bg-[#ffca93] shadow-[0_14px_34px_rgba(36,54,46,0.08)] transition hover:-translate-y-1 hover:shadow-[0_22px_42px_rgba(36,54,46,0.1)]" direction="left">
           <div className="h-72 bg-[#f7dcc7]">
-            <img src={productImage(mostLovedProducts[0])} alt={mostLovedProducts[0]?.name} className="h-full w-full object-cover" />
+            <img src={productImage(mostLoved.products[0])} alt={mostLoved.products[0]?.name} className="h-full w-full object-cover" />
           </div>
           <div className="p-6">
             <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--color-heading)]">Glow story</p>
@@ -317,34 +300,34 @@ function HomePage() {
               </p>
             </div>
             <div className="overflow-hidden rounded-[1.4rem] bg-white/45">
-              <img src={productImage(mostLovedProducts[1])} alt={mostLovedProducts[1]?.name} className="h-full w-full object-contain p-6" />
+              <img src={productImage(mostLoved.products[1])} alt={mostLoved.products[1]?.name} className="h-full w-full object-contain p-6" />
             </div>
           </div>
         </RevealOnScroll>
       </section>
 
       <RevealOnScroll as="section" className="elevated-section rounded-[1.8rem] bg-[#ffe25b] p-5 shadow-[0_18px_38px_rgba(36,54,46,0.07)]" delay={60}>
-        <HomeSectionTitle title="Newly Lunch Products" action="View More Products" />
-        <ProductGrid products={newLaunchProducts} sectionLabel="New" />
+        <HomeSectionTitle title={newLaunch.title} action="View More Products" />
+        <ProductGrid products={newLaunch.products} sectionLabel="New" />
       </RevealOnScroll>
 
       <ProductTabsSection
-        title="Our Products"
-        tabs={['All Products', 'Moisturizers', 'Sunscreen', 'Foundations', 'Lipsticks & Lip Gloss']}
+        title={allProducts.title}
+        tabs={allProducts.tabs}
         activeTab={0}
       >
-        <ProductGrid products={ourProducts} sectionLabel="Products" />
+        <ProductGrid products={allProducts.products} sectionLabel="Products" />
       </ProductTabsSection>
 
       <RevealOnScroll as="section" className="elevated-section rounded-[1.8rem] bg-[#9ec5ff] p-5 shadow-[0_18px_38px_rgba(36,54,46,0.07)]" delay={80}>
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-[1.45rem] font-extrabold text-[var(--color-heading)]">Limited Time Deals</h2>
+          <h2 className="text-[1.45rem] font-extrabold text-[var(--color-heading)]">{limitedDeal.title}</h2>
           <button className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[var(--color-accent)]">View Products</button>
         </div>
         <div className="grid gap-4 lg:grid-cols-[0.9fr_1.35fr]">
           <article className="rounded-[1.4rem] bg-white p-5">
             <div className="overflow-hidden rounded-[1.2rem] bg-[#f7faf8]">
-              <img src={productImage(beautyProducts[0])} alt={beautyProducts[0]?.name} className="h-64 w-full object-contain p-8" />
+              <img src={productImage(limitedDeal.featured)} alt={limitedDeal.featured?.name} className="h-64 w-full object-contain p-8" />
             </div>
             <h3 className="mt-5 text-2xl font-extrabold text-[var(--color-heading)]">Stay Fit. Stay Healthy.</h3>
             <p className="mt-2 text-sm leading-7 text-[var(--color-copy)]">Promote best-value essentials with simplified offer messaging.</p>
@@ -352,8 +335,8 @@ function HomePage() {
           </article>
           <div className="grid gap-4">
             {[
-              { title: 'Top Rate', products: takeProducts(allProducts, 0, 3) },
-              { title: 'Top Items', products: takeProducts(allProducts, 4, 3) },
+              { title: 'Top Rate', products: limitedDeal.topRate },
+              { title: 'Top Items', products: limitedDeal.topItems },
             ].map((group) => (
               <article key={group.title} className="rounded-[1.4rem] bg-white p-5">
                 <div className="mb-4 flex items-center justify-between">
@@ -412,7 +395,7 @@ function HomePage() {
               direction="zoom"
             >
               <div className="h-56 bg-[#eef7f3]">
-                <img src={productImage(favoriteProducts[index % favoriteProducts.length])} alt={card.title} className="h-full w-full object-cover" />
+                <img src={productImage(categoryFavorites[index % categoryFavorites.length])} alt={card.title} className="h-full w-full object-cover" />
               </div>
               <div className={`p-5 ${card.bg}`}>
                 <h3 className="text-lg font-extrabold text-[var(--color-heading)]">{card.title}</h3>
@@ -424,8 +407,8 @@ function HomePage() {
       </RevealOnScroll>
 
       <RevealOnScroll as="section" className="elevated-section rounded-[1.8rem] bg-[#b8efe7] p-5 shadow-[0_18px_38px_rgba(36,54,46,0.07)]" delay={60}>
-        <HomeSectionTitle title="Beauty Care Products" action="View More Products" />
-        <ProductGrid products={beautyProducts} sectionLabel="Beauty" />
+        <HomeSectionTitle title={beautyCare.title} action="View More Products" />
+        <ProductGrid products={beautyCare.products} sectionLabel="Beauty" />
       </RevealOnScroll>
 
       <RevealOnScroll as="section" delay={70}>
@@ -434,7 +417,7 @@ function HomePage() {
           <button className="text-sm font-bold text-[var(--color-accent)]">View All</button>
         </div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {blogProducts.map((product, index) => (
+          {latestBlog.map((product, index) => (
             <RevealOnScroll
               as="article"
               key={`blog-${product.id}-${index}`}

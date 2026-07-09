@@ -61,6 +61,26 @@ function ReturnIcon({ className = 'h-5 w-5' }) {
   )
 }
 
+function ShareIcon({ className = 'h-5 w-5' }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7 12v7a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-7" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="m8.5 7.5 3.5-3.5 3.5 3.5" />
+    </svg>
+  )
+}
+
+function CompareIcon({ className = 'h-5 w-5' }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-3" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M10 14 20 4" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M14 4h6v6" />
+    </svg>
+  )
+}
+
 function StarRating({ value = 4.8 }) {
   const filledStars = Math.round(value)
 
@@ -234,6 +254,7 @@ function ProductDetailsPage() {
     { id: 'specs', label: 'Specifications' },
     { id: 'reviews', label: `Customer Reviews (${128})` },
   ]
+  const sizeOptions = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL']
 
   function handleAddToCart() {
     if (!isInStock) {
@@ -256,112 +277,101 @@ function ProductDetailsPage() {
   }
 
   return (
-    <section className="mx-auto max-w-[1180px] px-4 py-8 md:px-6 lg:py-10">
-      <div className="mb-6 flex flex-wrap items-center gap-2 text-sm text-[var(--color-copy-soft)]">
-        <Link to="/" className="transition hover:text-[var(--color-heading)]">
+    <section className="mx-auto max-w-[1380px] px-4 py-8 md:px-6 lg:py-10">
+      <div className="mb-8 flex flex-wrap items-center gap-3 text-sm text-[#8391a7]">
+        <Link to="/" className="inline-flex items-center gap-2 font-medium text-[#14213d] transition hover:text-[var(--color-accent)]">
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5.5v-6h-5V21H4a1 1 0 0 1-1-1v-9.5Z" />
+          </svg>
           Home
         </Link>
-        <span>/</span>
-        <span>{product.category}</span>
-        {product.subcategory ? (
-          <>
-            <span>/</span>
-            <span>{product.subcategory}</span>
-          </>
-        ) : null}
+        <span>•</span>
+        <span className="font-medium">Product Details</span>
       </div>
 
-      <div className="grid gap-8 xl:grid-cols-[1.05fr_1fr]">
-        <div className="grid gap-6 md:grid-cols-[80px_minmax(0,1fr)]">
+      <div className="grid gap-9 xl:grid-cols-[1.2fr_0.8fr]">
+        <div className="grid gap-5 md:grid-cols-[90px_minmax(0,1fr)]">
           <div className="order-2 flex gap-4 md:order-1 md:flex-col">
             {galleryImages.map((image, index) => (
               <button
                 key={`${image || 'empty'}-${index}`}
                 type="button"
                 onClick={() => setActiveImageIndex(index)}
-                className={`flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-[1.1rem] border bg-white shadow-[0_10px_28px_rgba(15,23,42,0.06)] transition ${activeImageIndex === index ? 'border-[var(--color-accent)] ring-2 ring-[var(--color-accent)]/20' : 'border-[var(--color-border)] hover:border-[var(--color-border-strong)]'}`}
+                className={`flex h-[92px] w-[92px] items-center justify-center overflow-hidden rounded-[0.7rem] border bg-[#f6f7fb] transition ${activeImageIndex === index ? 'border-[#b99f92] bg-[#b99f92]/15' : 'border-[#eceff5] hover:border-[#cfd6e2]'}`}
               >
                 {image ? (
-                  <img src={image} alt={`${product.name} preview ${index + 1}`} className="h-full w-full object-cover" />
+                  <img src={image} alt={`${product.name} preview ${index + 1}`} className="h-full w-full object-contain p-2" />
                 ) : (
-                  <div className="h-full w-full bg-[var(--color-accent-soft)]" />
+                  <div className="h-full w-full bg-[#f2f4f8]" />
                 )}
               </button>
             ))}
           </div>
 
-          <div className="order-1 rounded-[2rem] border border-[var(--color-border)] bg-white p-8 shadow-[0_18px_50px_rgba(24,35,30,0.06)] md:order-2">
-            <div className="flex justify-end">
-              {product.discountType && product.discountValue > 0 ? (
-                <span className="inline-flex h-14 w-14 flex-col items-center justify-center rounded-full bg-[var(--color-heading)] text-center text-[11px] font-bold leading-[1.05] text-white shadow-[0_10px_24px_rgba(24,35,30,0.14)]">
-                  {product.discountType === 'percentage' ? `${product.discountValue}%` : 'Save'}
-                  <span className="text-[9px] font-semibold uppercase tracking-[0.08em]">Off</span>
-                </span>
-              ) : null}
-            </div>
-
+          <div className="order-1 relative overflow-hidden rounded-[1.75rem] bg-[#b99f92] p-8 md:order-2">
+            <button className="absolute left-4 top-1/2 z-20 flex h-[40px] w-[40px] -translate-y-1/2 items-center justify-center rounded-full bg-white text-[#3b475a] shadow-[0_10px_20px_rgba(17,24,39,0.08)]">
+              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m15 18-6-6 6-6" />
+              </svg>
+            </button>
+            <button className="absolute right-4 top-1/2 z-20 flex h-[40px] w-[40px] -translate-y-1/2 items-center justify-center rounded-full bg-white text-[#3b475a] shadow-[0_10px_20px_rgba(17,24,39,0.08)]">
+              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" />
+              </svg>
+            </button>
             {galleryImages[activeImageIndex] ? (
               <img
                 src={galleryImages[activeImageIndex]}
                 alt={product.name}
-                className="mx-auto mt-10 h-[22rem] w-full max-w-[26rem] object-contain"
+                className="mx-auto h-[38rem] w-full max-w-[34rem] object-contain"
               />
             ) : (
-              <div className="mx-auto mt-10 h-[22rem] w-full max-w-[26rem] rounded-[1.5rem] bg-[var(--color-accent-soft)]" />
+              <div className="mx-auto h-[38rem] w-full max-w-[34rem] rounded-[1.5rem] bg-[#cab3a8]" />
             )}
           </div>
         </div>
 
-        <div>
-          <div className="flex flex-wrap items-center gap-3 text-sm">
-            <span className="rounded-full bg-[var(--color-accent-soft)] px-3 py-1 font-medium text-[var(--color-accent)]">
-              New Arrival
-            </span>
-            <span className="flex items-center gap-1 text-[var(--color-copy-soft)]">
-              <ShieldIcon className="h-4 w-4 text-[var(--color-accent)]" />
-              Top Rated
-            </span>
+        <div className="rounded-[1.75rem] border border-[#dbe2ec] bg-white p-5 shadow-[0_10px_30px_rgba(17,24,39,0.04)]">
+          <div className="inline-flex bg-[#d90429] px-2 py-1 text-[12px] font-extrabold uppercase text-white">
+            Sales
+          </div>
+          <p className="mt-6 text-[14px] font-bold uppercase text-[#3b82f6]">New Arrival</p>
+
+          <div className="mt-5 flex items-start justify-between gap-4">
+            <h1 className="max-w-[470px] text-[28px] font-extrabold leading-[1.28] tracking-[-0.04em] text-[#14213d]">
+              {product.name}
+            </h1>
+            <button
+              type="button"
+              aria-label="Save item"
+              className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[#d8dee9] bg-white text-[#5d6b82] transition hover:border-[#0f8b86] hover:text-[#0f8b86]"
+            >
+              <HeartIcon className="h-5 w-5" />
+            </button>
           </div>
 
-          <h1 className="mt-3 text-[2.7rem] leading-[1.05] font-bold tracking-tight text-[var(--color-heading)]">
-            {product.name}
-          </h1>
-
-          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
-            <div className="flex items-center gap-3">
+          <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2">
+            <div className="flex items-center gap-2">
               <StarRating value={4.8} />
-              <span className="text-lg font-medium text-[var(--color-accent)]">4.8 (128 reviews)</span>
-            </div>
-            <span className="text-[var(--color-border-strong)]">|</span>
-            <span className="text-lg font-medium text-[var(--color-accent-strong)]">
-              {isInStock ? `In Stock (${stockCount})` : 'Out of Stock'}
-            </span>
-          </div>
-
-          <div className="mt-7 rounded-[1.35rem] border border-[var(--color-border)] bg-white px-5 py-4 shadow-[0_10px_28px_rgba(24,35,30,0.05)]">
-            <div className="flex flex-wrap items-end gap-3">
-              <p className="text-[2.2rem] leading-none font-bold tracking-tight text-[var(--color-accent)]">
-                {product.price}
-              </p>
-              {product.originalPrice ? (
-                <p className="pb-1 text-[1.15rem] font-medium text-[var(--color-copy-soft)] line-through">
-                  {product.originalPrice}
-                </p>
-              ) : null}
-              {discountAmount > 0 ? (
-                <p className="pb-1 text-sm font-semibold text-[var(--color-accent-strong)]">
-                  You save BDT {discountAmount.toFixed(2)}
-                </p>
-              ) : null}
+              <span className="text-[18px] font-medium text-[#5f6f86]">(11.78k reviews)</span>
             </div>
           </div>
 
-          <p className="mt-7 text-[15px] leading-9 text-[var(--color-copy)]">
-            {product.description}
-          </p>
+          <div className="mt-5 flex flex-wrap items-center gap-4">
+            <p className="text-[24px] font-extrabold tracking-[-0.04em] text-[#14213d]">{product.price}</p>
+            {product.originalPrice ? (
+              <p className="text-[20px] font-medium text-[#97a3b8] line-through">{product.originalPrice}</p>
+            ) : null}
+            <span className="bg-[#ffc107] px-2 py-1 text-[12px] font-extrabold uppercase text-black">15% OFF</span>
+          </div>
 
-          <div className="mt-8 border-t border-[var(--color-border)] pt-7">
-            <p className="text-base font-semibold text-[var(--color-heading)]">Color</p>
+          <div className="mt-7 border-t border-dashed border-[#d8dee9]" />
+
+          <div className="mt-5">
+            <div className="flex items-center gap-2 text-[18px]">
+              <span className="font-semibold text-[#14213d]">Color:</span>
+              <span className="text-[#4d5d56]">Green</span>
+            </div>
             <div className="mt-4 flex items-center gap-3">
               {colorOptions.map((color, index) => (
                 <button
@@ -369,30 +379,57 @@ function ProductDetailsPage() {
                   type="button"
                   aria-label={`Select ${color.name} color`}
                   onClick={() => setActiveColor(index)}
-                  className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition ${activeColor === index ? 'border-[var(--color-accent)]' : 'border-transparent'}`}
+                  className={`flex h-[34px] w-[34px] items-center justify-center rounded-full border transition ${activeColor === index ? 'border-[#0f8b86] bg-[#f1f7f6]' : 'border-[#d8dee9] bg-white'}`}
                 >
-                  <span className="h-9 w-9 rounded-full border border-black/5" style={{ backgroundColor: color.value }} />
+                  <span className="h-[18px] w-[18px] rounded-full" style={{ backgroundColor: color.value }} />
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-            <div className="flex h-14 items-center rounded-[1rem] border border-[var(--color-border)] bg-white px-2 shadow-[0_8px_22px_rgba(24,35,30,0.05)]">
+          <div className="mt-7 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-[18px]">
+              <span className="font-semibold text-[#14213d]">Size:</span>
+              <span className="text-[#4d5d56]">{sizeOptions[0]}</span>
+            </div>
+            <button className="text-[14px] font-medium text-[#627089]">Size Guide</button>
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            {sizeOptions.map((size, index) => (
+              <button
+                key={size}
+                className={`min-w-[72px] rounded-full border px-5 py-3 text-[15px] font-bold ${
+                  index === 0
+                    ? 'border-[#0f8b86] bg-[#0f8b86] text-white'
+                    : 'border-[#d8dee9] bg-white text-[#14213d]'
+                }`}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-7">
+            <p className="text-[18px] font-semibold text-[#14213d]">Quantity:</p>
+          </div>
+
+          <div className="mt-4 flex flex-col gap-4 xl:flex-row">
+            <div className="flex h-[48px] items-center rounded-full border border-[#d8dee9] bg-white px-4">
               <button
                 type="button"
                 onClick={() => changeQuantity(quantity - 1)}
-                className="flex h-10 w-10 items-center justify-center text-2xl text-[var(--color-copy-soft)]"
+                className="flex h-8 w-8 items-center justify-center text-[26px] text-[#627089]"
               >
                 -
               </button>
-              <span className="min-w-12 text-center text-xl font-semibold text-[var(--color-heading)]">
+              <span className="min-w-[56px] text-center text-[20px] font-semibold text-[#14213d]">
                 {quantity}
               </span>
               <button
                 type="button"
                 onClick={() => changeQuantity(quantity + 1)}
-                className="flex h-10 w-10 items-center justify-center text-2xl text-[var(--color-copy-soft)]"
+                className="flex h-8 w-8 items-center justify-center text-[26px] text-[#627089]"
               >
                 +
               </button>
@@ -400,41 +437,48 @@ function ProductDetailsPage() {
 
             <button
               type="button"
-              onClick={handleAddToCart}
-              disabled={!isInStock}
-              className="inline-flex h-14 flex-1 items-center justify-center gap-3 rounded-[1rem] bg-[var(--color-heading)] px-6 text-xl font-semibold text-white shadow-[0_14px_32px_rgba(24,35,30,0.16)] transition hover:-translate-y-0.5 hover:bg-[var(--color-accent-strong)] disabled:cursor-not-allowed disabled:opacity-55"
+              className="inline-flex h-[48px] items-center justify-center rounded-full bg-[#ffc107] px-12 text-[18px] font-bold text-[#14213d] shadow-[0_12px_24px_rgba(255,193,7,0.22)]"
             >
-              <CartIcon className="h-6 w-6" />
-              {buttonLabel}
+              Buy Now
             </button>
 
             <button
               type="button"
-              aria-label="Save item"
-              className="inline-flex h-14 w-14 items-center justify-center rounded-[1rem] border border-[var(--color-border)] bg-white text-[var(--color-copy-soft)] shadow-[0_8px_22px_rgba(24,35,30,0.05)] transition hover:text-[var(--color-accent)]"
+              onClick={handleAddToCart}
+              disabled={!isInStock}
+              className="inline-flex h-[48px] flex-1 items-center justify-center gap-3 rounded-full bg-[#0f8b86] px-8 text-[18px] font-bold text-white shadow-[0_14px_28px_rgba(15,139,134,0.18)] transition hover:bg-[#0b7672] disabled:cursor-not-allowed disabled:opacity-55"
             >
-              <HeartIcon className="h-6 w-6" />
+              <CartIcon className="h-5 w-5" />
+              {buttonLabel}
             </button>
           </div>
 
-          <div className="mt-4 text-sm text-[var(--color-copy-soft)]">
-            {quantityInCart > 0
-              ? `${quantityInCart} item${quantityInCart > 1 ? 's' : ''} already in your cart.`
-              : `SKU: ${product.sku}`}
+          <div className="mt-5 border-t border-dashed border-[#d8dee9]" />
+
+          <div className="mt-5 flex flex-wrap items-center gap-8 text-[16px] text-[#3b82f6]">
+            <button className="inline-flex items-center gap-2">
+              <ShareIcon className="h-4 w-4" />
+              Share
+            </button>
+            <button className="inline-flex items-center gap-2">
+              <CompareIcon className="h-4 w-4" />
+              Compare
+            </button>
           </div>
 
-          <div className="mt-8 grid gap-4 border-t border-[var(--color-border)] pt-7 sm:grid-cols-2">
-            {benefitCards.map(({ title, subtitle, icon: Icon }) => (
-              <div key={title} className="flex items-start gap-3">
-                <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--color-accent-soft)] text-[var(--color-accent)]">
-                  <Icon />
-                </div>
-                <div>
-                  <h2 className="text-[1.05rem] font-semibold text-[var(--color-heading)]">{title}</h2>
-                  <p className="mt-0.5 text-[15px] text-[var(--color-copy-soft)]">{subtitle}</p>
-                </div>
-              </div>
-            ))}
+          <div className="mt-5 space-y-4 text-[16px] text-[#4d5d56]">
+            <p>
+              <span className="font-semibold text-[#14213d]">Free Shipping:</span>{' '}
+              Estimated Delivery Time 5-7 Days
+            </p>
+            <p>
+              <span className="font-semibold text-[#14213d]">SKU:</span>{' '}
+              {quantityInCart > 0 ? `${product.sku} • ${quantityInCart} in cart` : product.sku}
+            </p>
+            <p>
+              <span className="font-semibold text-[#14213d]">Categories:</span>{' '}
+              {product.category}, {product.subcategory || 'Computers'}, Accessories
+            </p>
           </div>
         </div>
       </div>

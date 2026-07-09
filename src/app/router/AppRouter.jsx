@@ -3,12 +3,14 @@ import MainLayout from '../layouts/MainLayout'
 import LoginPage from '../../features/auth/pages/LoginPage'
 import HomePage from '../../features/home/pages/HomePage'
 import ProductDetailsPage from '../../features/products/pages/ProductDetailsPage'
+import CategoryProductsPage from '../../features/products/pages/CategoryProductsPage'
 
 function AppRouter() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
+        <Route path="/categories/:categoryId/products" element={<CategoryProductsPage />} />
         <Route path="/products/:productId" element={<ProductDetailsPage />} />
       </Route>
       <Route path="/login" element={<LoginPage />} />

@@ -84,6 +84,25 @@ function formatPrice(value) {
   }).format(numeric)
 }
 
+function buildDiscountLabel(discountType, discountValue) {
+  const normalizedDiscountType = String(discountType || '').trim().toLowerCase()
+  const numericDiscountValue = Number(discountValue)
+
+  if (Number.isNaN(numericDiscountValue) || numericDiscountValue <= 0) {
+    return ''
+  }
+
+  if (normalizedDiscountType === 'percentage') {
+    return `${numericDiscountValue}% OFF`
+  }
+
+  if (normalizedDiscountType === 'flat' || normalizedDiscountType === 'amount') {
+    return `${formatPrice(numericDiscountValue)} OFF`
+  }
+
+  return ''
+}
+
 function buildImageUrl(path) {
   if (!path) {
     return ''
@@ -178,6 +197,9 @@ function normalizeCategory(item, index) {
       'Browse a curated selection built for the storefront home page.',
     ),
     itemCount: totalItems > 0 ? `${totalItems} items` : 'Featured collection',
+    image: buildImageUrl(
+      readValue(item, ['image', 'image_url', 'icon', 'banner', 'thumbnail_image'], ''),
+    ),
   }
 }
 
@@ -316,6 +338,7 @@ function normalizeProduct(item, index) {
     originalPrice: formatPrice(derivedOriginalPrice),
     discountType,
     discountValue,
+    discountLabel: buildDiscountLabel(discountType, discountValue),
     stockQuantity,
     rating: rating.toFixed(1),
     accent: cardAccents[index % cardAccents.length],
@@ -437,9 +460,19 @@ function buildHeroPanel(products) {
 }
 
 function buildCategoryRail(products, categories) {
-  return cycleItems(products, 6, 0).map((product, index) => ({
+  const fallbackImages = cycleItems(products, 6, 0)
+
+  if (categories.length) {
+    return categories.slice(0, 6).map((category, index) => ({
+      id: category.id,
+      title: category.title,
+      image: category.image || fallbackImages[index]?.image || '/default-hero-banner.svg',
+    }))
+  }
+
+  return fallbackImages.map((product, index) => ({
     id: `category-rail-${product.id}-${index}`,
-    title: categories[index]?.title || product.category || 'Beauty Care',
+    title: product.category || 'Beauty Care',
     image: product.image || '/default-hero-banner.svg',
   }))
 }

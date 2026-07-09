@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import RevealOnScroll from './RevealOnScroll'
+import { useCart } from '../../features/cart/context/CartContext'
 
 const imageBaseUrl = (import.meta.env.VITE_IMAGE_URL || '')
   .replaceAll('"', '')
@@ -70,15 +71,18 @@ function buildMetaLabel(product) {
   return product.category
 }
 
-function ProductCard({ product, variant = 'default', sectionLabel = '' }) {
+function ProductCard({ product, variant = 'default' }) {
+  const { addItem, getItemQuantity } = useCart()
   const productImage = resolveProductImage(product.imagePath || product.image)
   const metaLabel = buildMetaLabel(product)
   const isTrending = variant === 'trending'
-  const discountBadge =
-    product.discountType === 'percentage' && Number(product.discountValue) > 0
-      ? `-${Number(product.discountValue)}%`
-      : '15% OFF'
+  const discountBadge = product.discountLabel || ''
   const swatches = ['#c9a7ff', '#83a6ff', '#f6626c', '#ffd75f']
+  const quantityInCart = getItemQuantity(product.id)
+
+  function handleAddToCart() {
+    addItem(product)
+  }
 
   if (isTrending) {
     return (
@@ -88,11 +92,13 @@ function ProductCard({ product, variant = 'default', sectionLabel = '' }) {
         direction="zoom"
       >
         <Link to={`/products/${product.id}`} className="relative block h-36 w-full shrink-0 overflow-hidden rounded-[1rem] bg-[#eef7f3] sm:w-36">
-          <div className="absolute right-2 top-2 z-10">
-            <span className="inline-flex min-w-10 items-center justify-center rounded-full bg-[#ff7e88] px-2 py-1 text-[10px] font-bold text-white shadow-sm">
-              {discountBadge}
-            </span>
-          </div>
+          {discountBadge ? (
+            <div className="absolute right-2 top-2 z-10">
+              <span className="inline-flex min-w-10 items-center justify-center rounded-full bg-[#ff7e88] px-2 py-1 text-[10px] font-bold text-white shadow-sm">
+                {discountBadge}
+              </span>
+            </div>
+          ) : null}
           {productImage ? (
             <img
               src={productImage}
@@ -129,10 +135,11 @@ function ProductCard({ product, variant = 'default', sectionLabel = '' }) {
 
           <button
             type="button"
+            onClick={handleAddToCart}
             className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[var(--color-accent)] px-5 py-2.5 text-sm font-bold text-white shadow-[0_10px_18px_rgba(45,106,86,0.18)] transition-all duration-300 hover:bg-[var(--color-accent-strong)] sm:w-auto"
           >
             <CartIcon className="h-4.5 w-4.5" />
-            Add to cart
+            {quantityInCart ? `Add More (${quantityInCart})` : 'Add to Cart'}
           </button>
         </div>
       </RevealOnScroll>
@@ -146,9 +153,11 @@ function ProductCard({ product, variant = 'default', sectionLabel = '' }) {
       direction="zoom"
     >
       <Link to={`/products/${product.id}`} className="relative block overflow-hidden rounded-[1rem] bg-[#f5f4f7] p-4 transition-all">
-        <div className="absolute left-0 top-3 z-10 bg-[#d90429] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.04em] text-white">
-          {discountBadge}
-        </div>
+        {discountBadge ? (
+          <div className="absolute left-0 top-3 z-10 bg-[#d90429] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.04em] text-white">
+            {discountBadge}
+          </div>
+        ) : null}
 
         {productImage ? (
           <img
@@ -189,7 +198,9 @@ function ProductCard({ product, variant = 'default', sectionLabel = '' }) {
                 {product.originalPrice}
               </span>
             )}
-            <span className="text-[16px] font-medium text-[#d90429]">10% OFF</span>
+            {discountBadge ? (
+              <span className="text-[16px] font-medium text-[#d90429]">{discountBadge}</span>
+            ) : null}
           </div>
 
           <div className="mt-5 flex items-center gap-4">
@@ -203,10 +214,11 @@ function ProductCard({ product, variant = 'default', sectionLabel = '' }) {
             </button>
             <button
               type="button"
+              onClick={handleAddToCart}
               className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-full bg-[#0f8b86] px-4 text-[16px] font-bold text-white shadow-[0_12px_22px_rgba(15,139,134,0.18)] transition hover:bg-[#0b7672]"
             >
               <CartIcon className="h-4 w-4" />
-              Add to Cart
+              {quantityInCart ? `Add More (${quantityInCart})` : 'Add to Cart'}
             </button>
           </div>
         </div>

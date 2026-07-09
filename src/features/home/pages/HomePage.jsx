@@ -210,12 +210,18 @@ function HomePage() {
               delay={index * 70}
               direction="zoom"
             >
-              <div className="mx-auto flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-[#fdeff5] shadow-[0_8px_18px_rgba(36,54,46,0.06)] transition duration-300 hover:shadow-[0_14px_28px_rgba(36,54,46,0.1)]">
-                <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
-              </div>
-              <p className="mt-3 text-sm font-bold text-[var(--color-heading)]">
-                {item.title}
-              </p>
+              <Link
+                to={`/categories/${item.id}/products`}
+                state={{ categoryTitle: item.title }}
+                className="block"
+              >
+                <div className="mx-auto flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-[#fdeff5] shadow-[0_8px_18px_rgba(36,54,46,0.06)] transition duration-300 hover:shadow-[0_14px_28px_rgba(36,54,46,0.1)]">
+                  <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
+                </div>
+                <p className="mt-3 text-sm font-bold text-[var(--color-heading)]">
+                  {item.title}
+                </p>
+              </Link>
             </RevealOnScroll>
           ))}
         </div>

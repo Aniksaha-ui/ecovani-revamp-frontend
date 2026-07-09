@@ -362,7 +362,9 @@ function ProductDetailsPage() {
             {product.originalPrice ? (
               <p className="text-[20px] font-medium text-[#97a3b8] line-through">{product.originalPrice}</p>
             ) : null}
-            <span className="bg-[#ffc107] px-2 py-1 text-[12px] font-extrabold uppercase text-black">15% OFF</span>
+            {product.discountLabel ? (
+              <span className="bg-[#ffc107] px-2 py-1 text-[12px] font-extrabold uppercase text-black">{product.discountLabel}</span>
+            ) : null}
           </div>
 
           <div className="mt-7 border-t border-dashed border-[#d8dee9]" />

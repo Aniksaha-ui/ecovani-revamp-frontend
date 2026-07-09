@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../features/auth/context/AuthContext'
+import { useCart } from '../../features/cart/context/CartContext'
 
 const navItems = [
   'Home',
@@ -20,6 +22,9 @@ function ChevronIcon({ className = 'h-4 w-4' }) {
 }
 
 function SiteHeader() {
+  const { isAuthenticated, user, logout } = useAuth()
+  const { itemCount } = useCart()
+
   return (
     <header className="w-full overflow-hidden border-y border-[#d9dfeb] bg-white">
       <div className="h-[6px] bg-[#0f8b86]" />
@@ -56,20 +61,39 @@ function SiteHeader() {
           </div>
 
           <div className="ml-auto flex items-center gap-8">
-            <div className="flex items-center gap-4">
-              <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#ffc107] text-[#111827]">
-                <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
-                  <circle cx="12" cy="8" r="3.2" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.5 18a5.5 5.5 0 0 1 11 0" />
-                </svg>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="leading-tight">
-                  <p className="text-[15px] font-medium text-[#5b6475]">Account</p>
-                  <p className="text-[32px] font-semibold tracking-[-0.04em] text-[#111827]">log in</p>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/login"
+                className="group flex items-center gap-4 rounded-full border border-[#d9dfeb] bg-[#f7f8fb] px-3 py-2 shadow-[0_10px_22px_rgba(17,24,39,0.05)] transition hover:-translate-y-0.5 hover:border-[#0f8b86]"
+              >
+                <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#ffc107] text-[#111827]">
+                  <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
+                    <circle cx="12" cy="8" r="3.2" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.5 18a5.5 5.5 0 0 1 11 0" />
+                  </svg>
                 </div>
-                <ChevronIcon className="mt-4 h-5 w-5 text-[#111827]" />
-              </div>
+                <div className="flex items-center gap-2">
+                  <div className="leading-tight">
+                    <p className="text-[13px] font-bold uppercase tracking-[0.16em] text-[#5b6475]">
+                      {isAuthenticated ? 'Signed in' : 'Account'}
+                    </p>
+                    <p className="text-[22px] font-black tracking-[-0.04em] text-[#111827]">
+                      {isAuthenticated ? user?.name || 'My Account' : 'Log in'}
+                    </p>
+                  </div>
+                  <ChevronIcon className="mt-3 h-5 w-5 text-[#111827] transition group-hover:text-[#0f8b86]" />
+                </div>
+              </Link>
+
+              {isAuthenticated ? (
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="inline-flex h-[52px] items-center justify-center rounded-full bg-[#111827] px-5 text-[14px] font-bold uppercase tracking-[0.12em] text-white transition hover:bg-[#0f8b86]"
+                >
+                  Log out
+                </button>
+              ) : null}
             </div>
 
             <div className="flex items-center gap-4">
@@ -82,7 +106,7 @@ function SiteHeader() {
               </div>
               <div className="leading-tight">
                 <p className="text-[15px] font-medium text-[#5b6475]">Cart</p>
-                <p className="text-[32px] font-semibold tracking-[-0.04em] text-[#111827]">0- Items</p>
+                <p className="text-[32px] font-semibold tracking-[-0.04em] text-[#111827]">{itemCount}- Items</p>
               </div>
             </div>
           </div>

@@ -1,6 +1,12 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import apiClient from '../../../shared/lib/api/apiClient'
+import { getStoredAuthToken } from '../../auth/lib/authStorage'
 
 const CART_STORAGE_KEY = 'ecovani-cart'
+const ADD_CART_ENDPOINT = import.meta.env.VITE_ADD_CART_ENDPOINT || 'users/add/cart'
+const DEFAULT_API_TOKEN = (import.meta.env.VITE_API_TOKEN || '')
+  .replaceAll('"', '')
+  .trim()
 
 const CartContext = createContext(null)
 
@@ -17,6 +23,31 @@ function readStoredCart() {
   }
 }
 
+function syncLocalItem(currentItems, product, quantity) {
+  const existingItem = currentItems.find((item) => item.id === product.id)
+
+  if (existingItem) {
+    return currentItems.map((item) =>
+      item.id === product.id
+        ? { ...item, quantity: Number(item.quantity || 0) + quantity }
+        : item,
+    )
+  }
+
+  return [
+    ...currentItems,
+    {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      rawPrice: Number(product.rawPrice || 0),
+      image: product.image,
+      category: product.category,
+      quantity,
+    },
+  ]
+}
+
 function CartProvider({ children }) {
   const [items, setItems] = useState(() => readStoredCart())
 
@@ -26,33 +57,45 @@ function CartProvider({ children }) {
 
   const value = useMemo(() => {
     const itemCount = items.reduce((total, item) => total + Number(item.quantity || 0), 0)
+    const subtotal = items.reduce((total, item) => {
+      const rawPrice = Number(item.rawPrice ?? item.price?.replace?.(/[^\d.]/g, '') ?? 0)
+      return total + rawPrice * Number(item.quantity || 0)
+    }, 0)
 
     return {
       items,
       itemCount,
-      addItem(product) {
-        setItems((currentItems) => {
-          const existingItem = currentItems.find((item) => item.id === product.id)
+      subtotal,
+      async addItem(product, quantity = 1) {
+        const normalizedQuantity = Math.max(1, Number(quantity || 1))
+        const authToken = getStoredAuthToken() || DEFAULT_API_TOKEN
 
-          if (existingItem) {
-            return currentItems.map((item) =>
-              item.id === product.id
-                ? { ...item, quantity: Number(item.quantity || 0) + 1 }
-                : item,
-            )
-          }
-
-          return [
-            ...currentItems,
+        if (authToken) {
+          await apiClient.post(ADD_CART_ENDPOINT, [
             {
-              id: product.id,
-              name: product.name,
-              price: product.price,
-              image: product.image,
-              quantity: 1,
+              product_id: product.id,
+              quantity: normalizedQuantity,
             },
-          ]
-        })
+          ])
+        }
+
+        setItems((currentItems) => syncLocalItem(currentItems, product, normalizedQuantity))
+      },
+      updateItemQuantity(productId, quantity) {
+        setItems((currentItems) =>
+          currentItems
+            .map((item) =>
+              item.id === productId
+                ? { ...item, quantity: Math.max(1, Number(quantity || 1)) }
+                : item,
+            ),
+        )
+      },
+      removeItem(productId) {
+        setItems((currentItems) => currentItems.filter((item) => item.id !== productId))
+      },
+      clearCart() {
+        setItems([])
       },
       getItemQuantity(productId) {
         const matchingItem = items.find((item) => item.id === productId)

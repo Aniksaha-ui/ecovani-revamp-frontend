@@ -96,7 +96,10 @@ function SiteHeader() {
               ) : null}
             </div>
 
-            <div className="flex items-center gap-4">
+            <Link
+              to="/cart"
+              className="group flex items-center gap-4 rounded-full border border-[#d9dfeb] bg-[#f7f8fb] px-3 py-2 shadow-[0_10px_22px_rgba(17,24,39,0.05)] transition hover:-translate-y-0.5 hover:border-[#0f8b86]"
+            >
               <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#ffc107] text-[#111827]">
                 <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h2l1.5 8.2a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.7L20 7H7.1" />
@@ -108,7 +111,7 @@ function SiteHeader() {
                 <p className="text-[15px] font-medium text-[#5b6475]">Cart</p>
                 <p className="text-[32px] font-semibold tracking-[-0.04em] text-[#111827]">{itemCount}- Items</p>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import RevealOnScroll from './RevealOnScroll'
 import { useCart } from '../../features/cart/context/CartContext'
@@ -73,6 +74,7 @@ function buildMetaLabel(product) {
 
 function ProductCard({ product, variant = 'default' }) {
   const { addItem, getItemQuantity } = useCart()
+  const [isAdding, setIsAdding] = useState(false)
   const productImage = resolveProductImage(product.imagePath || product.image)
   const metaLabel = buildMetaLabel(product)
   const isTrending = variant === 'trending'
@@ -80,8 +82,17 @@ function ProductCard({ product, variant = 'default' }) {
   const swatches = ['#c9a7ff', '#83a6ff', '#f6626c', '#ffd75f']
   const quantityInCart = getItemQuantity(product.id)
 
-  function handleAddToCart() {
-    addItem(product)
+  async function handleAddToCart() {
+    if (isAdding) {
+      return
+    }
+
+    try {
+      setIsAdding(true)
+      await addItem(product)
+    } finally {
+      setIsAdding(false)
+    }
   }
 
   if (isTrending) {
@@ -136,10 +147,11 @@ function ProductCard({ product, variant = 'default' }) {
           <button
             type="button"
             onClick={handleAddToCart}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[var(--color-accent)] px-5 py-2.5 text-sm font-bold text-white shadow-[0_10px_18px_rgba(45,106,86,0.18)] transition-all duration-300 hover:bg-[var(--color-accent-strong)] sm:w-auto"
+            disabled={isAdding}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[var(--color-accent)] px-5 py-2.5 text-sm font-bold text-white shadow-[0_10px_18px_rgba(45,106,86,0.18)] transition-all duration-300 hover:bg-[var(--color-accent-strong)] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
           >
             <CartIcon className="h-4.5 w-4.5" />
-            {quantityInCart ? `Add More (${quantityInCart})` : 'Add to Cart'}
+            {isAdding ? 'Adding...' : quantityInCart ? `Add More (${quantityInCart})` : 'Add to Cart'}
           </button>
         </div>
       </RevealOnScroll>
@@ -215,10 +227,11 @@ function ProductCard({ product, variant = 'default' }) {
             <button
               type="button"
               onClick={handleAddToCart}
-              className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-full bg-[#0f8b86] px-4 text-[16px] font-bold text-white shadow-[0_12px_22px_rgba(15,139,134,0.18)] transition hover:bg-[#0b7672]"
+              disabled={isAdding}
+              className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-full bg-[#0f8b86] px-4 text-[16px] font-bold text-white shadow-[0_12px_22px_rgba(15,139,134,0.18)] transition hover:bg-[#0b7672] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <CartIcon className="h-4 w-4" />
-              {quantityInCart ? `Add More (${quantityInCart})` : 'Add to Cart'}
+              {isAdding ? 'Adding...' : quantityInCart ? `Add More (${quantityInCart})` : 'Add to Cart'}
             </button>
           </div>
         </div>

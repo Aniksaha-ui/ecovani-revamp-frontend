@@ -257,15 +257,19 @@ function ProductDetailsPage() {
   const sizeOptions = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL']
 
   function handleAddToCart() {
-    if (!isInStock) {
+    if (!isInStock || buttonLabel === 'Adding...') {
       return
     }
 
-    for (let count = 0; count < quantity; count += 1) {
-      addItem(product)
-    }
+    setButtonLabel('Adding...')
 
-    setButtonLabel('Added to Cart')
+    addItem(product, quantity)
+      .then(() => {
+        setButtonLabel('Added to Cart')
+      })
+      .catch(() => {
+        setButtonLabel('Try Again')
+      })
   }
 
   function changeQuantity(nextQuantity) {

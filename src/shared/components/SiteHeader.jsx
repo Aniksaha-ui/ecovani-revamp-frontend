@@ -25,7 +25,7 @@ function SiteHeader() {
       <div className="h-[6px] bg-[#0f8b86]" />
 
       <div className="border-b border-[#d9dfeb]">
-        <div className="mx-auto flex max-w-[1600px] items-center gap-6 px-6 py-5 lg:px-10">
+        <div className="mx-auto flex w-[80%] max-w-[1720px] items-center gap-6 px-0 py-5">
           <Link to="/" className="flex min-w-[260px] items-center">
             <div className="flex items-center gap-3 text-[#0f8b86]">
               <div className="flex h-[58px] w-[58px] items-center justify-center rounded-full bg-[#0f8b86] text-[34px] font-black text-white">
@@ -90,7 +90,7 @@ function SiteHeader() {
       </div>
 
       <div>
-        <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-6 px-6 py-[14px] lg:px-10">
+        <div className="mx-auto flex w-[80%] max-w-[1720px] items-center justify-between gap-6 px-0 py-[14px]">
           <button className="inline-flex h-[48px] min-w-[264px] items-center justify-center gap-3 rounded-[8px] bg-[#0f8b86] px-6 text-[16px] font-bold text-white shadow-[0_8px_20px_rgba(15,139,134,0.2)]">
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="4" y="4" width="6" height="6" rx="1.2" />

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import heroBannerImage from '../../../assets/hero.png'
 import ProductGrid from '../../../shared/components/ProductGrid'
 import RevealOnScroll from '../../../shared/components/RevealOnScroll'
 import useHomePageData from '../hooks/useHomePageData'
@@ -49,10 +50,35 @@ function HomeSectionTitle({ title, action = 'View More Products' }) {
   )
 }
 
+function ProductTabsSection({ title, tabs, activeTab = 0, children }) {
+  return (
+    <RevealOnScroll as="section" delay={70}>
+      <div className="mb-10 text-center">
+        <h2 className="text-[34px] font-extrabold tracking-[-0.04em] text-[#14213d]">{title}</h2>
+        <div className="mx-auto mt-8 flex max-w-[690px] flex-wrap items-center justify-center gap-x-8 gap-y-3 border-b border-[#d9dfeb] pb-4">
+          {tabs.map((item, index) => (
+            <button
+              key={item}
+              className={`relative pb-3 text-[16px] font-semibold ${
+                index === activeTab ? 'text-[#14213d]' : 'text-[#4d5d56]'
+              }`}
+            >
+              {item}
+              {index === activeTab ? (
+                <span className="absolute inset-x-0 bottom-[-5px] h-[2px] bg-[#14213d]" />
+              ) : null}
+            </button>
+          ))}
+        </div>
+      </div>
+      {children}
+    </RevealOnScroll>
+  )
+}
+
 function HomePage() {
   const { isLoading, error, data } = useHomePageData()
   const allProducts = data.collections.flatMap((collection) => collection.products || [])
-  const heroProduct = allProducts[0]
   const sidePromoA = allProducts[1]
   const sidePromoB = allProducts[2]
   const categoryProducts = takeProducts(allProducts, 0, Math.max(6, data.categories.length || 6))
@@ -93,46 +119,71 @@ function HomePage() {
         </section>
       )}
 
-      <section className="grid gap-4 lg:grid-cols-[1.7fr_0.85fr]">
+      <section className="space-y-4">
         <RevealOnScroll
-          className="elevated-section overflow-hidden rounded-[1.8rem] bg-[#ffd8eb] p-6 shadow-[0_18px_40px_rgba(36,54,46,0.08)]"
-          direction="left"
+          className="relative overflow-hidden rounded-[1.9rem] bg-[#ffe96a] shadow-[0_18px_40px_rgba(36,54,46,0.08)]"
+          direction="zoom"
         >
-          <div className="ambient-orb -left-10 top-8 h-28 w-28 bg-white/70" />
-          <div className="ambient-orb bottom-0 right-0 h-36 w-36 bg-[#ffc6df]" />
-          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-            <div>
-              <span className="inline-flex rounded-full bg-[#a7f292] px-3 py-1 text-xs font-bold uppercase text-[var(--color-heading)]">
-                New Exclusive Offer
-              </span>
-              <h1 className="mt-4 max-w-md text-4xl font-extrabold leading-tight text-[var(--color-heading)]">
-                Beauty That Elevates Your Everyday
-              </h1>
-              <p className="mt-4 max-w-md text-sm leading-7 text-[var(--color-copy)]">
-                Discover premium makeup, skincare essentials, and wellness-first daily care
-                designed for modern routines.
+          <button className="absolute left-6 top-1/2 z-20 flex h-[48px] w-[48px] -translate-y-1/2 items-center justify-center rounded-full bg-black text-white shadow-[0_12px_24px_rgba(0,0,0,0.18)]">
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <button className="absolute right-6 top-1/2 z-20 flex h-[48px] w-[48px] -translate-y-1/2 items-center justify-center rounded-full bg-black text-white shadow-[0_12px_24px_rgba(0,0,0,0.18)]">
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
+
+          <div className="grid min-h-[598px] gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+            <div className="px-16 py-16 lg:pl-[175px] lg:pr-0">
+              <p className="text-[17px] font-bold text-black">
+                Get up to 30% of on your first $150 purchase
               </p>
-              <div className="mt-6 flex items-center gap-3">
-                <Link to="/" className="rounded-full bg-[var(--color-accent)] px-5 py-3 text-sm font-bold text-white shadow-[0_12px_24px_rgba(45,106,86,0.18)]">
-                  Shop Now
+              <h1 className="mt-7 max-w-[560px] text-[62px] font-black leading-[1.06] tracking-[-0.05em] text-black">
+                Wrap Yourself
+                <br />
+                in Winter Elegance
+              </h1>
+              <p className="mt-6 text-[17px] font-medium text-black/82">
+                Handcrafted designs &amp; premium fabrics for a timeless look.
+              </p>
+              <div className="mt-8">
+                <Link
+                  to="/"
+                  className="inline-flex items-center gap-4 rounded-full bg-[#0f8b86] px-5 py-4 text-[16px] font-extrabold text-white shadow-[0_14px_28px_rgba(15,139,134,0.22)]"
+                >
+                  <span>Shop Now</span>
+                  <span className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-white text-[#0f8b86]">
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M7 17 17 7M9 7h8v8" />
+                    </svg>
+                  </span>
                 </Link>
-                <button className="rounded-full border border-white/70 bg-white/80 px-4 py-3 text-sm font-bold text-[var(--color-heading)]">
-                  View Details
-                </button>
               </div>
             </div>
 
-            <div className="relative min-h-[260px] overflow-hidden rounded-[1.6rem] bg-[#ffe8f2]">
+            <div className="relative min-h-[598px] overflow-hidden">
               <img
-                src={productImage(heroProduct)}
-                alt={heroProduct?.name || 'Featured beauty product'}
-                className="absolute inset-0 h-full w-full object-contain p-8 transition-transform duration-700 group-hover:scale-105"
+                src={heroBannerImage}
+                alt="Fashion model in winter elegance hero banner"
+                className="absolute inset-0 h-full w-full object-contain object-right-bottom"
               />
+            </div>
+          </div>
+
+          <div className="absolute bottom-0 left-1/2 z-20 flex h-[60px] w-[332px] -translate-x-1/2 items-center justify-center rounded-t-[34px] bg-[#f7f8fb]">
+            <div className="flex items-center gap-[14px]">
+              <span className="h-[16px] w-[16px] rounded-full bg-[#d9dee5]" />
+              <span className="h-[16px] w-[16px] rounded-full bg-[#d9dee5]" />
+              <span className="h-[16px] w-[16px] rounded-full bg-[#d9dee5]" />
+              <span className="h-[16px] w-[78px] rounded-full bg-[#0f8b86]" />
+              <span className="h-[16px] w-[16px] rounded-full bg-[#d9dee5]" />
             </div>
           </div>
         </RevealOnScroll>
 
-        <div className="grid gap-4">
+        <div className="grid gap-4 lg:grid-cols-2">
           {[sidePromoA, sidePromoB].map((product, index) => (
             <RevealOnScroll
               key={`${product?.id || index}-promo`}
@@ -187,15 +238,12 @@ function HomePage() {
         </div>
       </RevealOnScroll>
 
-      <RevealOnScroll as="section" className="elevated-section rounded-[1.8rem] bg-[#ffd8eb] p-5 shadow-[0_18px_38px_rgba(36,54,46,0.07)]" delay={60}>
-        <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-[1.45rem] font-extrabold text-[var(--color-heading)]">Today&apos;s Top Offer</h2>
-          <div className="rounded-full bg-[#a7f292] px-4 py-2 text-xs font-bold text-[var(--color-heading)]">
-            Ends In: 17 : 27 : 28
-          </div>
-        </div>
+      <ProductTabsSection
+        title="Flash Fashion Deal"
+        tabs={["Men's Fashion", "Women's Fashion", 'Kids Clothing', 'Accessories', 'Jewelry & Watches']}
+      >
         <ProductGrid products={topOfferProducts} sectionLabel="Top Offer" />
-      </RevealOnScroll>
+      </ProductTabsSection>
 
       <RevealOnScroll as="section" delay={70}>
         <HomeSectionTitle title="Most Loved Products" />
@@ -280,22 +328,13 @@ function HomePage() {
         <ProductGrid products={newLaunchProducts} sectionLabel="New" />
       </RevealOnScroll>
 
-      <RevealOnScroll as="section" delay={70}>
-        <div className="mb-5 text-center">
-          <h2 className="text-[1.6rem] font-extrabold text-[var(--color-heading)]">Our Products</h2>
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            {['All Products', 'Moisturizers', 'Sunscreen', 'Foundations', 'Lipsticks & Lip Gloss', 'Essentials'].map((item, index) => (
-              <button
-                key={item}
-                className={`rounded-full px-4 py-2 text-xs font-bold ${index === 0 ? 'bg-[var(--color-accent)] text-white' : 'bg-white text-[var(--color-copy-soft)] shadow-[0_8px_18px_rgba(36,54,46,0.05)]'}`}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-        </div>
+      <ProductTabsSection
+        title="Our Products"
+        tabs={['All Products', 'Moisturizers', 'Sunscreen', 'Foundations', 'Lipsticks & Lip Gloss']}
+        activeTab={0}
+      >
         <ProductGrid products={ourProducts} sectionLabel="Products" />
-      </RevealOnScroll>
+      </ProductTabsSection>
 
       <RevealOnScroll as="section" className="elevated-section rounded-[1.8rem] bg-[#9ec5ff] p-5 shadow-[0_18px_38px_rgba(36,54,46,0.07)]" delay={80}>
         <div className="mb-5 flex items-center justify-between">

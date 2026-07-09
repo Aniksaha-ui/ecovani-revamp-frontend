@@ -14,7 +14,7 @@ function MainLayout() {
         <div className="w-full">
           <SiteHeader />
         </div>
-        <div className="mx-auto flex w-full max-w-[1320px] flex-1 px-4 pt-6 sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-[80%] max-w-[1720px] flex-1 px-0 pt-6">
           <main className="flex-1 pb-16">
             <Outlet />
           </main>

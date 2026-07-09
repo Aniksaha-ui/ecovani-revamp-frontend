@@ -1,7 +1,7 @@
 function Footer() {
   return (
     <footer className="overflow-hidden rounded-t-[2rem] bg-[#0f5c58] text-white">
-      <div className="mx-auto max-w-[1320px] px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto w-[80%] max-w-[1720px] px-0 py-12">
         <div className="grid gap-10 md:grid-cols-2 xl:grid-cols-5">
           <div className="xl:col-span-2">
             <h2 className="text-3xl font-extrabold">Sellzy</h2>

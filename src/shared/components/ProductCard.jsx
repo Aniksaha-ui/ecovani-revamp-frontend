@@ -47,6 +47,21 @@ function HeartIcon({ className = 'h-5 w-5' }) {
   )
 }
 
+function StarRating() {
+  return (
+    <div className="flex items-center gap-1">
+      {[0, 1, 2, 3].map((star) => (
+        <svg key={star} className="h-4 w-4 fill-[#ffb400] text-[#ffb400]" viewBox="0 0 20 20">
+          <path d="m10 1.7 2.3 4.7 5.2.8-3.8 3.7.9 5.1-4.6-2.4-4.6 2.4.9-5.1-3.8-3.7 5.2-.8L10 1.7Z" />
+        </svg>
+      ))}
+      <svg className="h-4 w-4 fill-[#c7ced8] text-[#c7ced8]" viewBox="0 0 20 20">
+        <path d="m10 1.7 2.3 4.7 5.2.8-3.8 3.7.9 5.1-4.6-2.4-4.6 2.4.9-5.1-3.8-3.7 5.2-.8L10 1.7Z" />
+      </svg>
+    </div>
+  )
+}
+
 function buildMetaLabel(product) {
   if (product.subcategory) {
     return `${product.category} • ${product.subcategory}`
@@ -62,7 +77,8 @@ function ProductCard({ product, variant = 'default', sectionLabel = '' }) {
   const discountBadge =
     product.discountType === 'percentage' && Number(product.discountValue) > 0
       ? `-${Number(product.discountValue)}%`
-      : '10% OFF'
+      : '15% OFF'
+  const swatches = ['#c9a7ff', '#83a6ff', '#f6626c', '#ffd75f']
 
   if (isTrending) {
     return (
@@ -126,85 +142,73 @@ function ProductCard({ product, variant = 'default', sectionLabel = '' }) {
   return (
     <RevealOnScroll
       as="article"
-      className="group flex flex-col overflow-hidden rounded-[1.25rem] border border-[#d9e7e0] bg-white shadow-[0_12px_28px_rgba(27,55,45,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(27,55,45,0.08)]"
+      className="group flex flex-col overflow-hidden rounded-[1.25rem] border border-[#d8dee9] bg-white p-5 shadow-[0_8px_20px_rgba(17,24,39,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(17,24,39,0.08)]"
       direction="zoom"
     >
-      <Link to={`/products/${product.id}`} className="relative block aspect-[0.92] overflow-hidden bg-[#f3faf7] p-4 transition-all">
-        <div className="absolute left-3 top-3 z-10">
-          <span className="inline-flex items-center rounded-full bg-[#a7f292] px-2.5 py-1 text-[10px] font-bold text-[var(--color-heading)] shadow-sm">
-            Sale
-          </span>
-        </div>
-        <div className="absolute right-3 top-3 z-10">
-          <button
-            type="button"
-            aria-label={`Save ${product.name}`}
-            onClick={(e) => e.preventDefault()}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[var(--color-copy-soft)] shadow-sm transition-all duration-300 hover:scale-105 hover:text-[var(--color-heading)] active:scale-95"
-          >
-            <HeartIcon className="h-5 w-5" />
-          </button>
-        </div>
-
-        <div className="absolute bottom-4 left-4 z-10">
-          <span className="inline-flex items-center rounded-full bg-[#ff7e88] px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">
-            {discountBadge}
-          </span>
+      <Link to={`/products/${product.id}`} className="relative block overflow-hidden rounded-[1rem] bg-[#f5f4f7] p-4 transition-all">
+        <div className="absolute left-0 top-3 z-10 bg-[#d90429] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.04em] text-white">
+          {discountBadge}
         </div>
 
         {productImage ? (
           <img
             src={productImage}
             alt={product.name}
-            className="h-full w-full object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-110"
+            className="h-[258px] w-full object-contain transition-transform duration-700 group-hover:scale-105"
           />
         ) : (
-          <div className="h-full w-full bg-slate-100" />
+          <div className="h-[258px] w-full bg-slate-100" />
         )}
       </Link>
 
-      <div className="flex flex-1 flex-col p-4">
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <p className="truncate text-[10px] font-extrabold uppercase tracking-widest text-[#ff7e88]">
-            {sectionLabel || 'Products'}
-          </p>
-          {product.stockQuantity > 0 && (
-            <span className="shrink-0 rounded-full bg-[#eef7f3] px-2 py-1 text-[10px] font-bold text-[var(--color-accent-strong)]">
-              New
-            </span>
-          )}
-        </div>
-
+      <div className="flex flex-1 flex-col pt-5">
         <Link to={`/products/${product.id}`} className="mb-3 transition-colors hover:text-[var(--color-heading)]">
-          <h3 className="line-clamp-2 text-[13px] font-bold leading-6 text-[var(--color-heading)]">
+          <h3 className="line-clamp-2 text-[18px] font-extrabold leading-[1.3] tracking-[-0.03em] text-[#14213d]">
             {product.name}
           </h3>
         </Link>
 
-        <div className="mb-4 flex items-center gap-2 text-[11px] text-[var(--color-copy-soft)]">
-          <span>{metaLabel}</span>
-          <span>•</span>
-          <span>{product.rating || '4.8'} stars</span>
+        <div className="mb-4 flex items-center gap-2 text-[14px] text-[#627089]">
+          <StarRating />
+          <span>({product.reviewCount || 189})</span>
         </div>
 
-        <div className="mt-auto flex items-end justify-between gap-2">
-          <div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-lg font-extrabold tracking-tight text-[var(--color-heading)]">{product.price}</span>
-              {product.originalPrice && (
-                <span className="text-xs font-semibold text-[var(--color-copy-soft)] line-through">
-                  {product.originalPrice}
-                </span>
-              )}
-            </div>
+        <div className="mb-5 flex items-center gap-3">
+          {swatches.map((color) => (
+            <span key={color} className="flex h-9 w-9 items-center justify-center rounded-full border border-[#d8dee9] bg-white">
+              <span className="h-6 w-6 rounded-full" style={{ backgroundColor: color }} />
+            </span>
+          ))}
+        </div>
+
+        <div className="mt-auto">
+          <div className="flex items-baseline gap-3">
+            <span className="text-[20px] font-extrabold tracking-[-0.03em] text-[#14213d]">{product.price}</span>
+            {product.originalPrice && (
+              <span className="text-[16px] font-semibold text-[#97a3b8] line-through">
+                {product.originalPrice}
+              </span>
+            )}
+            <span className="text-[16px] font-medium text-[#d90429]">10% OFF</span>
           </div>
-          <button
-            type="button"
-            className="flex h-9 w-24 shrink-0 items-center justify-center gap-1 rounded-full bg-[var(--color-accent)] px-3 text-xs font-bold text-white shadow-[0_10px_18px_rgba(45,106,86,0.18)] transition-all duration-300 hover:bg-[var(--color-accent-strong)] active:scale-95"
-          >
-            <CartIcon className="h-4 w-4" />
-            Add
-          </button>
+
+          <div className="mt-5 flex items-center gap-4">
+            <button
+              type="button"
+              aria-label={`Save ${product.name}`}
+              onClick={(e) => e.preventDefault()}
+              className="flex h-[46px] w-[46px] items-center justify-center rounded-full border border-[#d8dee9] bg-white text-[#5d6b82] transition hover:border-[#0f8b86] hover:text-[#0f8b86]"
+            >
+              <HeartIcon className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-full bg-[#0f8b86] px-4 text-[16px] font-bold text-white shadow-[0_12px_22px_rgba(15,139,134,0.18)] transition hover:bg-[#0b7672]"
+            >
+              <CartIcon className="h-4 w-4" />
+              Add to Cart
+            </button>
+          </div>
         </div>
       </div>
     </RevealOnScroll>

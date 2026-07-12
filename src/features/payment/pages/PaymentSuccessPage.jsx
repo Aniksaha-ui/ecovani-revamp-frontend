@@ -17,8 +17,8 @@ function PaymentSuccessPage() {
       title="Your payment was successful and your order is confirmed."
       description="Everything went through successfully. We have received your payment, cleared your cart on the server, and started preparing your order for the next step."
       transactionId={transactionId}
-      primaryAction={{ label: 'Continue Shopping', to: '/' }}
-      secondaryAction={{ label: 'Back to Checkout', to: '/checkout' }}
+      primaryAction={{ label: 'View My Orders', to: '/orders' }}
+      secondaryAction={{ label: 'Continue Shopping', to: '/' }}
     />
   )
 }

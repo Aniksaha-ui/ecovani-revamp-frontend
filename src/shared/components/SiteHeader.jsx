@@ -63,7 +63,7 @@ function SiteHeader() {
           <div className="ml-auto flex items-center gap-8">
             <div className="flex items-center gap-3">
               <Link
-                to="/login"
+                to={isAuthenticated ? '/orders' : '/login'}
                 className="group flex items-center gap-4 rounded-full border border-[#d9dfeb] bg-[#f7f8fb] px-3 py-2 shadow-[0_10px_22px_rgba(17,24,39,0.05)] transition hover:-translate-y-0.5 hover:border-[#0f8b86]"
               >
                 <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#ffc107] text-[#111827]">
@@ -75,10 +75,10 @@ function SiteHeader() {
                 <div className="flex items-center gap-2">
                   <div className="leading-tight">
                     <p className="text-[13px] font-bold uppercase tracking-[0.16em] text-[#5b6475]">
-                      {isAuthenticated ? 'Signed in' : 'Account'}
+                      {isAuthenticated ? 'My orders' : 'Account'}
                     </p>
                     <p className="text-[22px] font-black tracking-[-0.04em] text-[#111827]">
-                      {isAuthenticated ? user?.name || 'My Account' : 'Log in'}
+                      {isAuthenticated ? user?.name || 'Orders' : 'Log in'}
                     </p>
                   </div>
                   <ChevronIcon className="mt-3 h-5 w-5 text-[#111827] transition group-hover:text-[#0f8b86]" />

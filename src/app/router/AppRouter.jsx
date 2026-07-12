@@ -8,6 +8,8 @@ import CartPage from '../../features/cart/pages/CartPage'
 import CheckoutPage from '../../features/checkout/pages/CheckoutPage'
 import PaymentSuccessPage from '../../features/payment/pages/PaymentSuccessPage'
 import PaymentFailedPage from '../../features/payment/pages/PaymentFailedPage'
+import OrdersPage from '../../features/orders/pages/OrdersPage'
+import OrderDetailsPage from '../../features/orders/pages/OrderDetailsPage'
 
 function AppRouter() {
   return (
@@ -16,6 +18,8 @@ function AppRouter() {
         <Route path="/" element={<HomePage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
         <Route path="/payment/success" element={<PaymentSuccessPage />} />
         <Route path="/payment/failed" element={<PaymentFailedPage />} />
         <Route path="/categories/:categoryId/products" element={<CategoryProductsPage />} />

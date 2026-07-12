@@ -104,6 +104,7 @@ function normalizeProductSummary(item, index = 0) {
   const oldPrice = Number(readValue(item, ['old_price', 'regular_price'], 0))
   const discountType = readValue(item, ['discount_type'], '')
   const discountValue = Number(readValue(item, ['discount_value'], 0))
+  const stockValue = readValue(item, ['stock_quantity', 'quantity', 'stock'], '')
   const derivedOriginalPrice = (() => {
     if (oldPrice > basePrice) {
       return oldPrice
@@ -132,7 +133,7 @@ function normalizeProductSummary(item, index = 0) {
     discountType,
     discountValue,
     discountLabel: buildDiscountLabel(discountType, discountValue),
-    stockQuantity: Number(readValue(item, ['stock_quantity', 'quantity', 'stock'], 0)),
+    stockQuantity: stockValue === '' ? null : Number(stockValue),
     image: buildImageUrl(
       readValue(
         item,
@@ -156,6 +157,11 @@ function normalizeProductSummary(item, index = 0) {
 function normalizeProductDetails(payload) {
   const source = payload?.data || payload
   const normalizedProduct = normalizeProductSummary(source)
+  const resolvedSku = readValue(
+    source,
+    ['product_sku', 'sku', 'code'],
+    `ECO-${String(readValue(source, ['product_id', 'id'], '0')).padStart(4, '0')}`,
+  )
 
   return {
     ...normalizedProduct,
@@ -166,7 +172,8 @@ function normalizeProductDetails(payload) {
       ['description', 'short_description'],
       'No description available yet.',
     ),
-    sku: `ECO-${String(readValue(source, ['product_id', 'id'], '0')).padStart(4, '0')}`,
+    sku: resolvedSku,
+    product_sku: resolvedSku,
   }
 }
 

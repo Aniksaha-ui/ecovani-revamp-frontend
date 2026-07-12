@@ -235,8 +235,9 @@ function ProductDetailsPage() {
 
   const { product } = state
   const quantityInCart = getItemQuantity(product.id)
-  const stockCount = product.stockQuantity
-  const isInStock = stockCount > 0
+  const stockCount = Number.isFinite(product.stockQuantity) ? Number(product.stockQuantity) : null
+  const isInStock = stockCount === null || stockCount > 0
+  const maxPurchasableQuantity = stockCount && stockCount > 0 ? stockCount : 99
 
   const colorOptions = [
     { name: 'Midnight', value: '#1f2937' },
@@ -278,7 +279,7 @@ function ProductDetailsPage() {
       return
     }
 
-    setQuantity(Math.max(1, Math.min(stockCount, nextQuantity)))
+    setQuantity(Math.max(1, Math.min(maxPurchasableQuantity, nextQuantity)))
   }
 
   async function handleShareFallback() {
@@ -447,14 +448,11 @@ function ProductDetailsPage() {
 
           <div className="mt-7">
             <p className="text-[18px] font-semibold text-[#14213d]">Quantity:</p>
-          </div>
-
-          <div className="mt-4 flex flex-col gap-4 xl:flex-row">
-            <div className="flex h-[48px] items-center rounded-full border border-[#d8dee9] bg-white px-4">
+            <div className="mt-4 flex h-[48px] w-max items-center rounded-full border border-[#d8dee9] bg-white px-4">
               <button
                 type="button"
                 onClick={() => changeQuantity(quantity - 1)}
-                className="flex h-8 w-8 items-center justify-center text-[26px] text-[#627089]"
+                className="flex h-8 w-8 items-center justify-center text-[26px] text-[#627089] hover:text-[#0f8b86] transition-colors cursor-pointer"
               >
                 -
               </button>
@@ -464,15 +462,17 @@ function ProductDetailsPage() {
               <button
                 type="button"
                 onClick={() => changeQuantity(quantity + 1)}
-                className="flex h-8 w-8 items-center justify-center text-[26px] text-[#627089]"
+                className="flex h-8 w-8 items-center justify-center text-[26px] text-[#627089] hover:text-[#0f8b86] transition-colors cursor-pointer"
               >
                 +
               </button>
             </div>
+          </div>
 
+          <div className="mt-6 flex flex-col gap-4 sm:flex-row">
             <button
               type="button"
-              className="inline-flex h-[48px] items-center justify-center rounded-full bg-[#ffc107] px-12 text-[18px] font-bold text-[#14213d] shadow-[0_12px_24px_rgba(255,193,7,0.22)]"
+              className="flex-1 inline-flex h-[48px] items-center justify-center rounded-full bg-[#ffc107] px-6 text-[18px] font-bold text-[#14213d] shadow-[0_12px_24px_rgba(255,193,7,0.22)] transition hover:bg-[#ffb300] active:scale-[0.98] cursor-pointer"
             >
               Buy Now
             </button>
@@ -481,7 +481,7 @@ function ProductDetailsPage() {
               type="button"
               onClick={handleAddToCart}
               disabled={!isInStock}
-              className="inline-flex h-[48px] flex-1 items-center justify-center gap-3 rounded-full bg-[#0f8b86] px-8 text-[18px] font-bold text-white shadow-[0_14px_28px_rgba(15,139,134,0.18)] transition hover:bg-[#0b7672] disabled:cursor-not-allowed disabled:opacity-55"
+              className="flex-1 inline-flex h-[48px] items-center justify-center gap-3 rounded-full bg-[#0f8b86] px-6 text-[18px] font-bold text-white shadow-[0_14px_28px_rgba(15,139,134,0.18)] transition hover:bg-[#0b7672] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-55 whitespace-nowrap cursor-pointer"
             >
               <CartIcon className="h-5 w-5" />
               {buttonLabel}
@@ -541,7 +541,7 @@ function ProductDetailsPage() {
             </p>
             <p>
               <span className="font-semibold text-[#14213d]">SKU:</span>{' '}
-              {quantityInCart > 0 ? `${product.sku} • ${quantityInCart} in cart` : product.sku}
+              {quantityInCart > 0 ? `${product.product_sku} • ${quantityInCart} in cart` : product.product_sku}
             </p>
             <p>
               <span className="font-semibold text-[#14213d]">Categories:</span>{' '}
@@ -608,7 +608,9 @@ function ProductDetailsPage() {
               </div>
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--color-copy-soft)]">Available Stock</p>
-                <p className="mt-2 text-lg font-semibold text-[var(--color-heading)]">{stockCount} units</p>
+                <p className="mt-2 text-lg font-semibold text-[var(--color-heading)]">
+                  {stockCount === null ? 'In stock' : `${stockCount} units`}
+                </p>
               </div>
             </div>
           ) : null}

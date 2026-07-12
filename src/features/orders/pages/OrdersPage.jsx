@@ -165,7 +165,7 @@ function OrdersPage() {
     <div className="space-y-6">
       <section className="rounded-[2rem] border border-[#d8e1ee] bg-[linear-gradient(180deg,_#fff7c5,_#fffefa)] p-8 shadow-[0_18px_40px_rgba(29,42,58,0.06)]">
         <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8b86]">My orders</p>
-        <h1 className="mt-4 text-5xl font-black tracking-[-0.05em] text-[#14213d]">Track every order from one clean dashboard.</h1>
+        <h1 className="mt-4 text-3xl sm:text-4xl md:text-5xl font-black tracking-[-0.05em] text-[#14213d]">Track every order from one clean dashboard.</h1>
         <p className="mt-4 max-w-3xl text-[16px] leading-8 text-[#5f6f84]">
           Review your recent purchases, jump into full order details, and quickly reorder favorite items whenever you need them again.
         </p>
@@ -187,7 +187,7 @@ function OrdersPage() {
               className="overflow-hidden rounded-[2rem] border border-[#d8e1ee] bg-white shadow-[0_18px_40px_rgba(29,42,58,0.06)]"
             >
               <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#edf1f7] px-6 py-6">
-                <h2 className="text-[28px] font-black tracking-[-0.04em] text-[#14213d]">
+                <h2 className="text-xl sm:text-2xl md:text-[28px] font-black tracking-[-0.04em] text-[#14213d]">
                   Order ID : <span className="text-[#274463]">{order.order_number}</span>
                 </h2>
                 <span className={`inline-flex rounded-full px-4 py-2 text-sm font-bold ${getOrderStatusTone(order.status)}`}>

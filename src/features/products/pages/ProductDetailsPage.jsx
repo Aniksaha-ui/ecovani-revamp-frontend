@@ -357,10 +357,10 @@ function ProductDetailsPage() {
               <img
                 src={galleryImages[activeImageIndex]}
                 alt={product.name}
-                className="mx-auto h-[38rem] w-full max-w-[34rem] object-contain"
+                className="mx-auto h-[20rem] sm:h-[30rem] md:h-[38rem] w-full max-w-[34rem] object-contain"
               />
             ) : (
-              <div className="mx-auto h-[38rem] w-full max-w-[34rem] rounded-[1.5rem] bg-[#cab3a8]" />
+              <div className="mx-auto h-[20rem] sm:h-[30rem] md:h-[38rem] w-full max-w-[34rem] rounded-[1.5rem] bg-[#cab3a8]" />
             )}
           </div>
         </div>

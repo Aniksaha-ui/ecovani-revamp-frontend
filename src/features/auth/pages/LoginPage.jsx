@@ -23,7 +23,7 @@ function LoginPage() {
               <p className="text-sm font-black uppercase tracking-[0.28em] text-[#0f8b86]">
                 Customer access
               </p>
-              <h2 className="max-w-lg text-5xl font-black leading-[1.02] tracking-[-0.05em]">
+              <h2 className="max-w-lg text-3xl sm:text-5xl font-black leading-[1.02] tracking-[-0.05em]">
                 Sign in with the same clean, fast shopping experience.
               </h2>
               <p className="max-w-xl text-[17px] leading-8 text-[#243044]/82">

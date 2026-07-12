@@ -72,7 +72,7 @@ function LoginForm() {
         <span className="inline-flex items-center rounded-full bg-[var(--color-accent-soft)] px-4 py-2 text-xs font-bold uppercase tracking-[0.24em] text-[var(--color-accent-strong)]">
           Welcome back
         </span>
-        <h1 className="text-4xl font-black tracking-[-0.04em] text-[var(--color-heading)]">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-[-0.04em] text-[var(--color-heading)]">
           Sign in to your account
         </h1>
         <p className="text-[15px] leading-7 text-[var(--color-copy-soft)]">

@@ -120,15 +120,15 @@ function HomePage() {
             </svg>
           </button>
 
-          <div className="grid min-h-[598px] gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-            <div className="px-16 py-16 lg:pl-[175px] lg:pr-0">
-              <p className="text-[17px] font-bold text-black">
+          <div className="grid min-h-[500px] lg:min-h-[598px] gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+            <div className="px-6 py-12 sm:px-12 lg:pl-[175px] lg:pr-0">
+              <p className="text-sm sm:text-[17px] font-bold text-black">
                 Get up to 30% of on your first $150 purchase
               </p>
-              <h1 className="mt-7 max-w-[560px] text-[62px] font-black leading-[1.06] tracking-[-0.05em] text-black">
+              <h1 className="mt-4 sm:mt-7 max-w-[560px] text-3xl sm:text-5xl lg:text-[62px] font-black leading-[1.06] tracking-[-0.05em] text-black">
                 {hero?.title || 'Wrap Yourself'}
               </h1>
-              <p className="mt-6 text-[17px] font-medium text-black/82">
+              <p className="mt-4 sm:mt-6 text-sm sm:text-[17px] font-medium text-black/82">
                 {hero?.description || 'Handcrafted designs & premium fabrics for a timeless look.'}
               </p>
               <div className="mt-8">
@@ -146,7 +146,7 @@ function HomePage() {
               </div>
             </div>
 
-            <div className="relative min-h-[598px] overflow-hidden">
+            <div className="relative h-[250px] sm:h-[400px] lg:h-full lg:min-h-[598px] overflow-hidden">
               <img
                 src={hero?.image || heroBannerImage}
                 alt="Fashion model in winter elegance hero banner"
@@ -155,7 +155,7 @@ function HomePage() {
             </div>
           </div>
 
-          <div className="absolute bottom-0 left-1/2 z-20 flex h-[60px] w-[332px] -translate-x-1/2 items-center justify-center rounded-t-[34px] bg-[#f7f8fb]">
+          <div className="absolute bottom-0 left-1/2 z-20 flex h-[60px] w-[90%] max-w-[332px] -translate-x-1/2 items-center justify-center rounded-t-[34px] bg-[#f7f8fb]">
             <div className="flex items-center gap-[14px]">
               <span className="h-[16px] w-[16px] rounded-full bg-[#d9dee5]" />
               <span className="h-[16px] w-[16px] rounded-full bg-[#d9dee5]" />
@@ -170,7 +170,7 @@ function HomePage() {
           {(hero?.spotlightCards || []).map((card, index) => (
             <RevealOnScroll
               key={`${card?.id || index}-promo`}
-              className="grid min-h-[190px] grid-cols-[1fr_0.9fr] overflow-hidden rounded-[1.5rem] bg-white shadow-[0_16px_34px_rgba(36,54,46,0.08)] transition hover:-translate-y-1 hover:shadow-[0_22px_42px_rgba(36,54,46,0.1)]"
+              className="grid min-h-[190px] grid-cols-1 sm:grid-cols-[1fr_0.9fr] overflow-hidden rounded-[1.5rem] bg-white shadow-[0_16px_34px_rgba(36,54,46,0.08)] transition hover:-translate-y-1 hover:shadow-[0_22px_42px_rgba(36,54,46,0.1)]"
               direction="right"
               delay={index * 120}
             >
@@ -188,7 +188,7 @@ function HomePage() {
                   {card?.ctaLabel || 'Shop Now'}
                 </button>
               </div>
-              <div style={{ backgroundColor: card?.background || '#fcebd7' }}>
+              <div style={{ backgroundColor: card?.background || '#fcebd7' }} className="h-44 sm:h-auto">
                 <img
                   src={card?.image || '/default-hero-banner.svg'}
                   alt={card?.title || 'Store promo'}
@@ -202,7 +202,7 @@ function HomePage() {
 
       <RevealOnScroll as="section" delay={40}>
         <HomeSectionTitle title="Shop By Category" action=" " />
-        <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {(homepage.categoryRail || []).slice(0, 6).map((item, index) => (
             <RevealOnScroll
               key={`category-${item.id}-${index}`}
@@ -264,7 +264,7 @@ function HomePage() {
         ))}
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
+      <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {featureItems.map((item) => (
           <RevealOnScroll
             key={item}
@@ -305,7 +305,7 @@ function HomePage() {
                 editorial storefront feel.
               </p>
             </div>
-            <div className="overflow-hidden rounded-[1.4rem] bg-white/45">
+            <div className="h-48 sm:h-auto overflow-hidden rounded-[1.4rem] bg-white/45">
               <img src={productImage(mostLoved.products[1])} alt={mostLoved.products[1]?.name} className="h-full w-full object-contain p-6" />
             </div>
           </div>
@@ -370,7 +370,7 @@ function HomePage() {
 
       <RevealOnScroll as="section" delay={50}>
         <HomeSectionTitle title="Shop By Brands" action=" " />
-        <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {brands.map((brand, index) => (
             <RevealOnScroll
               key={`${brand}-${index}`}
@@ -386,7 +386,7 @@ function HomePage() {
 
       <RevealOnScroll as="section" delay={60}>
         <HomeSectionTitle title="Category Favorites" action=" " />
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-2 xl:grid-cols-4">
           {[
             { title: 'Gentle Face Essentials', subtitle: 'Skin Wellness', bg: 'bg-[#ffd85d]' },
             { title: 'Where Glow Meets Care', subtitle: 'Glow Ritual', bg: 'bg-[#9bb5ff]' },
@@ -462,7 +462,7 @@ function HomePage() {
             placeholder="Enter your email address"
             className="h-12 flex-1 rounded-full border border-[var(--color-border)] bg-[var(--color-page)] px-5 text-sm outline-none focus:border-[var(--color-accent)]"
           />
-          <button className="rounded-full bg-[var(--color-accent)] px-6 text-sm font-bold text-white">
+          <button className="h-12 rounded-full bg-[var(--color-accent)] px-6 text-sm font-bold text-white">
             Subscribe
           </button>
         </div>

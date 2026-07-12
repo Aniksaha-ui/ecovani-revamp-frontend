@@ -363,7 +363,7 @@ function CheckoutPage() {
         <div className="space-y-6">
           <section className="overflow-hidden rounded-[2rem] border border-[#d8e1ee] bg-white shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
             <div className="border-b border-[#edf1f7] bg-[linear-gradient(180deg,_#f7f9fc,_#f2f5f9)] px-6 py-5">
-              <h2 className="text-[1.9rem] font-black tracking-[-0.04em] text-[#1d2433]">
+              <h2 className="text-xl sm:text-[1.9rem] font-black tracking-[-0.04em] text-[#1d2433]">
                 {isAuthenticated ? 'Account information' : 'Already have an account ?'}
               </h2>
             </div>
@@ -408,7 +408,7 @@ function CheckoutPage() {
 
           <section className="overflow-hidden rounded-[2rem] border border-[#d8e1ee] bg-white shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
             <div className="border-b border-[#edf1f7] bg-[linear-gradient(180deg,_#f7f9fc,_#f2f5f9)] px-6 py-5">
-              <h2 className="text-[1.9rem] font-black tracking-[-0.04em] text-[#1d2433]">Shipping Address</h2>
+              <h2 className="text-xl sm:text-[1.9rem] font-black tracking-[-0.04em] text-[#1d2433]">Shipping Address</h2>
             </div>
 
             <div className="space-y-8 p-6">
@@ -451,7 +451,7 @@ function CheckoutPage() {
                 </FieldShell>
               </div>
 
-              <div className="grid gap-5 md:grid-cols-[1.1fr_1.1fr_1fr_1fr]">
+              <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-[1.1fr_1.1fr_1fr_1fr]">
                 <FieldShell label="Country / Region" error={formErrors.country}>
                   <select
                     className={inputClass(Boolean(formErrors.country))}
@@ -579,7 +579,7 @@ function CheckoutPage() {
 
           <section className="overflow-hidden rounded-[2rem] border border-[#d8e1ee] bg-white shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
             <div className="border-b border-[#edf1f7] bg-[linear-gradient(180deg,_#f7f9fc,_#f2f5f9)] px-6 py-5">
-              <h2 className="text-[1.9rem] font-black tracking-[-0.04em] text-[#1d2433]">Payment</h2>
+              <h2 className="text-xl sm:text-[1.9rem] font-black tracking-[-0.04em] text-[#1d2433]">Payment</h2>
             </div>
             <div className="p-6">
               <label className="block rounded-[1.7rem] border border-[#0f8b86] bg-[#f7fbfb] p-5 shadow-[0_10px_24px_rgba(15,139,134,0.06)]">
@@ -610,7 +610,7 @@ function CheckoutPage() {
 
         <aside className="space-y-6">
           <section className="rounded-[2rem] border border-[#d8e1ee] bg-white p-6 shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
-            <h2 className="text-3xl font-black tracking-[-0.04em] text-[#1d2433]">Cart Items</h2>
+            <h2 className="text-xl sm:text-3xl font-black tracking-[-0.04em] text-[#1d2433]">Cart Items</h2>
             {cartState.error ? (
               <div className="mt-4 rounded-[1.2rem] border border-[#f7d8a6] bg-[#fff8e8] px-4 py-3 text-sm font-medium text-[#9a6700]">
                 {cartState.error}
@@ -647,7 +647,7 @@ function CheckoutPage() {
           </section>
 
           <section className="rounded-[2rem] border border-[#d8e1ee] bg-white p-6 shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
-            <h2 className="text-3xl font-black tracking-[-0.04em] text-[#1d2433]">Apply Coupon</h2>
+            <h2 className="text-xl sm:text-3xl font-black tracking-[-0.04em] text-[#1d2433]">Apply Coupon</h2>
             <div className="mt-5 flex gap-3">
               <input
                 value={couponCode}
@@ -669,7 +669,7 @@ function CheckoutPage() {
           </section>
 
           <section className="rounded-[2rem] border border-[#d8e1ee] bg-[linear-gradient(180deg,_#f8fafc,_#f4f7fb)] p-6 shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
-            <h2 className="text-3xl font-black tracking-[-0.04em] text-[#1d2433]">Order Summary</h2>
+            <h2 className="text-xl sm:text-3xl font-black tracking-[-0.04em] text-[#1d2433]">Order Summary</h2>
             <div className="mt-6 space-y-4">
               <div className="flex items-center justify-between text-[17px] text-[#4d5c72]">
                 <span>Sub-Total</span>

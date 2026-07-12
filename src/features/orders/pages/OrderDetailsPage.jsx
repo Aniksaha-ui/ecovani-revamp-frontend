@@ -37,7 +37,7 @@ function TimelineStep({ step, isLast }) {
         ) : null}
       </div>
       <div className="pb-10">
-        <h3 className="text-[30px] font-black tracking-[-0.04em] text-[#14213d]">{step.title}</h3>
+        <h3 className="text-xl sm:text-2xl md:text-[30px] font-black tracking-[-0.04em] text-[#14213d]">{step.title}</h3>
         <p className="mt-2 max-w-4xl text-[16px] leading-8 text-[#5f6f84]">{step.description}</p>
       </div>
     </div>
@@ -184,7 +184,7 @@ function OrderDetailsPage() {
           </svg>
         </button>
         <div className="flex flex-wrap items-center gap-4">
-          <h1 className="text-5xl font-black tracking-[-0.05em] text-[#14213d]">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-[-0.05em] text-[#14213d]">
             Order ID : <span className="text-[#274463]">{order.order_number}</span>
           </h1>
           <span className={`inline-flex rounded-full px-4 py-2 text-sm font-bold ${getOrderStatusTone(order.status)}`}>
@@ -201,7 +201,7 @@ function OrderDetailsPage() {
 
       <section className="overflow-hidden rounded-[2rem] border border-[#d8e1ee] bg-white shadow-[0_18px_40px_rgba(29,42,58,0.06)]">
         <div className="border-b border-[#edf1f7] bg-[linear-gradient(180deg,_#f7f9fc,_#f2f5f9)] px-6 py-5">
-          <h2 className="text-[32px] font-black tracking-[-0.04em] text-[#14213d]">Timeline</h2>
+          <h2 className="text-2xl sm:text-[32px] font-black tracking-[-0.04em] text-[#14213d]">Timeline</h2>
         </div>
         <div className="px-6 py-8">
           {order.timeline.map((step, index) => (
@@ -212,7 +212,7 @@ function OrderDetailsPage() {
 
       <section className="overflow-hidden rounded-[2rem] border border-[#d8e1ee] bg-white shadow-[0_18px_40px_rgba(29,42,58,0.06)]">
         <div className="border-b border-[#edf1f7] bg-[linear-gradient(180deg,_#f7f9fc,_#f2f5f9)] px-6 py-5">
-          <h2 className="text-[32px] font-black tracking-[-0.04em] text-[#14213d]">Shipment Address</h2>
+          <h2 className="text-2xl sm:text-[32px] font-black tracking-[-0.04em] text-[#14213d]">Shipment Address</h2>
         </div>
         <div className="space-y-5 px-6 py-7 text-[16px] text-[#14213d]">
           <p className="flex items-center gap-4">
@@ -256,7 +256,7 @@ function OrderDetailsPage() {
 
       <section className="overflow-hidden rounded-[2rem] border border-[#d8e1ee] bg-white shadow-[0_18px_40px_rgba(29,42,58,0.06)]">
         <div className="border-b border-[#edf1f7] bg-[linear-gradient(180deg,_#f7f9fc,_#f2f5f9)] px-6 py-5">
-          <h2 className="text-[32px] font-black tracking-[-0.04em] text-[#14213d]">Order Items</h2>
+          <h2 className="text-2xl sm:text-[32px] font-black tracking-[-0.04em] text-[#14213d]">Order Items</h2>
         </div>
 
         <div className="px-6 py-5">
@@ -278,7 +278,7 @@ function OrderDetailsPage() {
               </div>
 
               <div className="min-w-0">
-                <h3 className="text-[28px] font-black tracking-[-0.04em] text-[#14213d]">{item.name}</h3>
+                <h3 className="text-xl sm:text-2xl md:text-[28px] font-black tracking-[-0.04em] text-[#14213d]">{item.name}</h3>
                 <p className="mt-2 text-[16px] text-[#5f6f84]">{item.category}</p>
                 {item.description ? (
                   <p className="mt-2 max-w-3xl text-sm leading-7 text-[#5f6f84]">{item.description}</p>

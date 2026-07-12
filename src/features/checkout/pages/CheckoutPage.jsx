@@ -185,10 +185,56 @@ function CheckoutPage() {
   }, [fallbackItems])
 
   const items = cartState.items
+
   const subtotal = useMemo(
     () => items.reduce((total, item) => total + Number(item.rawPrice || 0) * Number(item.quantity || 0), 0),
     [items],
   )
+
+  if (cartState.isLoading) {
+    return (
+      <section className="mx-auto max-w-3xl px-4 py-12 flex min-h-[60vh] items-center justify-center">
+        <div className="w-full rounded-[2rem] border border-[#d8e1ee] bg-white p-10 text-center shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-[#0f8b86]/10 text-[#0f8b86]">
+            <svg className="h-10 w-10 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+          </div>
+          <h1 className="text-xl font-bold text-[#1d2433]">Loading checkout details...</h1>
+        </div>
+      </section>
+    )
+  }
+
+  if (!items.length) {
+    return (
+      <section className="mx-auto max-w-3xl px-4 py-12 flex min-h-[60vh] items-center justify-center">
+        <div className="w-full rounded-[2rem] border border-[#d8e1ee] bg-white p-10 text-center shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-[#0f8b86]/10 text-[#0f8b86]">
+            <svg className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+            </svg>
+          </div>
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0f8b86]">
+            Checkout
+          </p>
+          <h1 className="mt-3 text-3xl font-black tracking-[-0.04em] text-[#1d2433]">
+            Your checkout is empty
+          </h1>
+          <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-[#67768c]">
+            There are no items ready for checkout. Please add products to your cart before proceeding.
+          </p>
+          <Link
+            to="/"
+            className="mt-8 inline-flex h-14 items-center justify-center rounded-full bg-[#0f8b86] px-8 text-sm font-bold uppercase tracking-[0.14em] text-white shadow-[0_12px_24px_rgba(15,139,134,0.18)] transition hover:bg-[#0b7672]"
+          >
+            Start Shopping
+          </Link>
+        </div>
+      </section>
+    )
+  }
   const selectedShipment = shipmentOptions.find((option) => option.id === formState.shipmentType) || shipmentOptions[0]
   const shipmentAmount = selectedShipment.amount
   const vatAmount = 0
@@ -347,7 +393,7 @@ function CheckoutPage() {
   }
 
   return (
-    <section className="mx-auto max-w-[1720px] px-4 py-8 md:px-6 lg:py-10">
+    <section className="mx-auto max-w-full px-1 py-8 md:px-6 lg:py-10">
       <div className="mb-10 flex flex-wrap items-center gap-3 text-sm text-[#93a0b5]">
         <Link to="/" className="inline-flex items-center gap-2 font-medium text-[#14213d] transition hover:text-[#0f8b86]">
           <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -362,12 +408,12 @@ function CheckoutPage() {
       <form onSubmit={handlePlaceOrder} className="grid gap-6 xl:grid-cols-[1.28fr_0.62fr]">
         <div className="space-y-6">
           <section className="overflow-hidden rounded-[2rem] border border-[#d8e1ee] bg-white shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
-            <div className="border-b border-[#edf1f7] bg-[linear-gradient(180deg,_#f7f9fc,_#f2f5f9)] px-6 py-5">
+            <div className="border-b border-[#edf1f7] bg-[linear-gradient(180deg,_#f7f9fc,_#f2f5f9)] px-4 sm:px-6 py-4 sm:py-5">
               <h2 className="text-xl sm:text-[1.9rem] font-black tracking-[-0.04em] text-[#1d2433]">
                 {isAuthenticated ? 'Account information' : 'Already have an account ?'}
               </h2>
             </div>
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               {isAuthenticated ? (
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div>
@@ -407,12 +453,12 @@ function CheckoutPage() {
           </section>
 
           <section className="overflow-hidden rounded-[2rem] border border-[#d8e1ee] bg-white shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
-            <div className="border-b border-[#edf1f7] bg-[linear-gradient(180deg,_#f7f9fc,_#f2f5f9)] px-6 py-5">
+            <div className="border-b border-[#edf1f7] bg-[linear-gradient(180deg,_#f7f9fc,_#f2f5f9)] px-4 sm:px-6 py-4 sm:py-5">
               <h2 className="text-xl sm:text-[1.9rem] font-black tracking-[-0.04em] text-[#1d2433]">Shipping Address</h2>
             </div>
 
-            <div className="space-y-8 p-6">
-              <div className="grid gap-5 md:grid-cols-2">
+            <div className="space-y-6 sm:space-y-8 p-4 sm:p-6">
+              <div className="grid gap-5 sm:grid-cols-2">
                 <FieldShell label="First Name" error={formErrors.firstName}>
                   <input
                     className={inputClass(Boolean(formErrors.firstName))}
@@ -521,7 +567,7 @@ function CheckoutPage() {
 
               <div className="space-y-4 border-t border-[#edf1f7] pt-8">
                 <h3 className="text-[1.2rem] font-black text-[#42506a]">Shipment Type</h3>
-                <div className="flex flex-wrap gap-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
                   {shipmentOptions.map((option) => (
                     <label key={option.id} className="flex items-center gap-3 text-[15px] font-semibold text-[#1d2433]">
                       <input
@@ -540,7 +586,7 @@ function CheckoutPage() {
 
               <div className="space-y-4 border-t border-[#edf1f7] pt-8">
                 <h3 className="text-[1.2rem] font-black text-[#42506a]">Address Type</h3>
-                <div className="flex flex-wrap gap-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
                   {addressTypes.map((type) => (
                     <label key={type} className="flex items-center gap-3 text-[15px] font-semibold text-[#1d2433]">
                       <input
@@ -557,19 +603,19 @@ function CheckoutPage() {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center justify-end gap-4 border-t border-[#edf1f7] pt-6">
-                {saveMessage ? <p className="mr-auto text-sm font-semibold text-[#0f8b86]">{saveMessage}</p> : null}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 sm:gap-4 border-t border-[#edf1f7] pt-6">
+                {saveMessage ? <p className="text-sm font-semibold text-[#0f8b86] sm:mr-auto text-center sm:text-left">{saveMessage}</p> : null}
                 <button
                   type="button"
                   onClick={handleResetForm}
-                  className="inline-flex min-w-32 items-center justify-center rounded-full border border-[#d9e2ef] px-6 py-3 text-sm font-bold text-[#37445a] transition hover:border-[#0f8b86] hover:text-[#0f8b86]"
+                  className="inline-flex w-full sm:w-auto min-w-32 items-center justify-center rounded-full border border-[#d9e2ef] px-6 py-3 text-sm font-bold text-[#37445a] transition hover:border-[#0f8b86] hover:text-[#0f8b86]"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleSaveDetails}
-                  className="inline-flex min-w-32 items-center justify-center rounded-full bg-[#0f8b86] px-6 py-3 text-sm font-bold text-white shadow-[0_12px_24px_rgba(15,139,134,0.18)] transition hover:bg-[#0b7672]"
+                  className="inline-flex w-full sm:w-auto min-w-32 items-center justify-center rounded-full bg-[#0f8b86] px-6 py-3 text-sm font-bold text-white shadow-[0_12px_24px_rgba(15,139,134,0.18)] transition hover:bg-[#0b7672]"
                 >
                   Save
                 </button>
@@ -578,11 +624,11 @@ function CheckoutPage() {
           </section>
 
           <section className="overflow-hidden rounded-[2rem] border border-[#d8e1ee] bg-white shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
-            <div className="border-b border-[#edf1f7] bg-[linear-gradient(180deg,_#f7f9fc,_#f2f5f9)] px-6 py-5">
+            <div className="border-b border-[#edf1f7] bg-[linear-gradient(180deg,_#f7f9fc,_#f2f5f9)] px-4 sm:px-6 py-4 sm:py-5">
               <h2 className="text-xl sm:text-[1.9rem] font-black tracking-[-0.04em] text-[#1d2433]">Payment</h2>
             </div>
-            <div className="p-6">
-              <label className="block rounded-[1.7rem] border border-[#0f8b86] bg-[#f7fbfb] p-5 shadow-[0_10px_24px_rgba(15,139,134,0.06)]">
+            <div className="p-4 sm:p-6">
+              <label className="block rounded-[1.7rem] border border-[#0f8b86] bg-[#f7fbfb] p-4 sm:p-5 shadow-[0_10px_24px_rgba(15,139,134,0.06)]">
                 <div className="flex items-center gap-3">
                   <input
                     type="radio"
@@ -609,7 +655,7 @@ function CheckoutPage() {
         </div>
 
         <aside className="space-y-6">
-          <section className="rounded-[2rem] border border-[#d8e1ee] bg-white p-6 shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
+          <section className="rounded-[2rem] border border-[#d8e1ee] bg-white p-4 sm:p-6 shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
             <h2 className="text-xl sm:text-3xl font-black tracking-[-0.04em] text-[#1d2433]">Cart Items</h2>
             {cartState.error ? (
               <div className="mt-4 rounded-[1.2rem] border border-[#f7d8a6] bg-[#fff8e8] px-4 py-3 text-sm font-medium text-[#9a6700]">
@@ -646,9 +692,9 @@ function CheckoutPage() {
             </div>
           </section>
 
-          <section className="rounded-[2rem] border border-[#d8e1ee] bg-white p-6 shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
+          <section className="rounded-[2rem] border border-[#d8e1ee] bg-white p-4 sm:p-6 shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
             <h2 className="text-xl sm:text-3xl font-black tracking-[-0.04em] text-[#1d2433]">Apply Coupon</h2>
-            <div className="mt-5 flex gap-3">
+            <div className="mt-5 flex flex-col sm:flex-row gap-3">
               <input
                 value={couponCode}
                 onChange={(event) => setCouponCode(event.target.value)}
@@ -668,7 +714,7 @@ function CheckoutPage() {
             {couponState.success ? <p className="mt-3 text-sm font-medium text-[#0f8b86]">{couponState.success}</p> : null}
           </section>
 
-          <section className="rounded-[2rem] border border-[#d8e1ee] bg-[linear-gradient(180deg,_#f8fafc,_#f4f7fb)] p-6 shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
+          <section className="rounded-[2rem] border border-[#d8e1ee] bg-[linear-gradient(180deg,_#f8fafc,_#f4f7fb)] p-4 sm:p-6 shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
             <h2 className="text-xl sm:text-3xl font-black tracking-[-0.04em] text-[#1d2433]">Order Summary</h2>
             <div className="mt-6 space-y-4">
               <div className="flex items-center justify-between text-[17px] text-[#4d5c72]">

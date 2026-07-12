@@ -44,27 +44,29 @@ function HomeSectionTitle({ title, action = 'View More Products' }) {
 
 function ProductTabsSection({ title, tabs, activeTab = 0, children }) {
   return (
-    <RevealOnScroll as="section" delay={70}>
-      <div className="mb-10 text-center">
-        <h2 className="text-[34px] font-extrabold tracking-[-0.04em] text-[#14213d]">{title}</h2>
-        <div className="mx-auto mt-8 flex max-w-[690px] flex-wrap items-center justify-center gap-x-8 gap-y-3 border-b border-[#d9dfeb] pb-4">
-          {tabs.map((item, index) => (
-            <button
-              key={item}
-              className={`relative pb-3 text-[16px] font-semibold ${
-                index === activeTab ? 'text-[#14213d]' : 'text-[#4d5d56]'
-              }`}
-            >
-              {item}
-              {index === activeTab ? (
-                <span className="absolute inset-x-0 bottom-[-5px] h-[2px] bg-[#14213d]" />
-              ) : null}
-            </button>
-          ))}
+    <section>
+      <RevealOnScroll delay={40}>
+        <div className="mb-10 text-center">
+          <h2 className="text-[34px] font-extrabold tracking-[-0.04em] text-[#14213d]">{title}</h2>
+          <div className="mx-auto mt-8 flex max-w-[690px] flex-wrap items-center justify-center gap-x-8 gap-y-3 border-b border-[#d9dfeb] pb-4">
+            {tabs.map((item, index) => (
+              <button
+                key={item}
+                className={`relative pb-3 text-[16px] font-semibold ${
+                  index === activeTab ? 'text-[#14213d]' : 'text-[#4d5d56]'
+                }`}
+              >
+                {item}
+                {index === activeTab ? (
+                  <span className="absolute inset-x-0 bottom-[-5px] h-[2px] bg-[#14213d]" />
+                ) : null}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      </RevealOnScroll>
       {children}
-    </RevealOnScroll>
+    </section>
   )
 }
 
@@ -200,8 +202,10 @@ function HomePage() {
         </div>
       </section>
 
-      <RevealOnScroll as="section" delay={40}>
-        <HomeSectionTitle title="Shop By Category" action=" " />
+      <section>
+        <RevealOnScroll delay={40}>
+          <HomeSectionTitle title="Shop By Category" action=" " />
+        </RevealOnScroll>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {(homepage.categoryRail || []).slice(0, 6).map((item, index) => (
             <RevealOnScroll
@@ -225,7 +229,7 @@ function HomePage() {
             </RevealOnScroll>
           ))}
         </div>
-      </RevealOnScroll>
+      </section>
 
       <ProductTabsSection
         title={flashDeal.title}
@@ -234,10 +238,12 @@ function HomePage() {
         <ProductGrid products={flashDeal.products} sectionLabel="Top Offer" />
       </ProductTabsSection>
 
-      <RevealOnScroll as="section" delay={70}>
-        <HomeSectionTitle title={mostLoved.title} />
+      <section>
+        <RevealOnScroll delay={40}>
+          <HomeSectionTitle title={mostLoved.title} />
+        </RevealOnScroll>
         <ProductGrid products={mostLoved.products} sectionLabel="Most Loved" />
-      </RevealOnScroll>
+      </section>
 
       <section className="grid gap-4 md:grid-cols-3">
         {[
@@ -312,10 +318,12 @@ function HomePage() {
         </RevealOnScroll>
       </section>
 
-      <RevealOnScroll as="section" className="elevated-section rounded-[1.8rem] bg-[#ffe25b] p-5 shadow-[0_18px_38px_rgba(36,54,46,0.07)]" delay={60}>
-        <HomeSectionTitle title={newLaunch.title} action="View More Products" />
+      <section className="elevated-section rounded-[1.8rem] bg-[#ffe25b] p-5 shadow-[0_18px_38px_rgba(36,54,46,0.07)]">
+        <RevealOnScroll delay={40}>
+          <HomeSectionTitle title={newLaunch.title} action="View More Products" />
+        </RevealOnScroll>
         <ProductGrid products={newLaunch.products} sectionLabel="New" />
-      </RevealOnScroll>
+      </section>
 
       <ProductTabsSection
         title={allProducts.title}
@@ -325,12 +333,14 @@ function HomePage() {
         <ProductGrid products={allProducts.products} sectionLabel="Products" />
       </ProductTabsSection>
 
-      <RevealOnScroll as="section" className="elevated-section rounded-[1.8rem] bg-[#9ec5ff] p-5 shadow-[0_18px_38px_rgba(36,54,46,0.07)]" delay={80}>
-        <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-[1.45rem] font-extrabold text-[var(--color-heading)]">{limitedDeal.title}</h2>
-          <button className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[var(--color-accent)]">View Products</button>
-        </div>
-        <div className="grid gap-4 lg:grid-cols-[0.9fr_1.35fr]">
+      <section className="elevated-section rounded-[1.8rem] bg-[#9ec5ff] p-5 shadow-[0_18px_38px_rgba(36,54,46,0.07)]">
+        <RevealOnScroll delay={40}>
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-[1.45rem] font-extrabold text-[var(--color-heading)]">{limitedDeal.title}</h2>
+            <button className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[var(--color-accent)]">View Products</button>
+          </div>
+        </RevealOnScroll>
+        <div className="grid gap-4 lg:grid-cols-[0.95fr_1.35fr]">
           <article className="rounded-[1.4rem] bg-white p-5">
             <div className="overflow-hidden rounded-[1.2rem] bg-[#f7faf8]">
               <img src={productImage(limitedDeal.featured)} alt={limitedDeal.featured?.name} className="h-64 w-full object-contain p-8" />
@@ -366,10 +376,12 @@ function HomePage() {
             ))}
           </div>
         </div>
-      </RevealOnScroll>
+      </section>
 
-      <RevealOnScroll as="section" delay={50}>
-        <HomeSectionTitle title="Shop By Brands" action=" " />
+      <section>
+        <RevealOnScroll delay={40}>
+          <HomeSectionTitle title="Shop By Brands" action=" " />
+        </RevealOnScroll>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {brands.map((brand, index) => (
             <RevealOnScroll
@@ -382,10 +394,12 @@ function HomePage() {
             </RevealOnScroll>
           ))}
         </div>
-      </RevealOnScroll>
+      </section>
 
-      <RevealOnScroll as="section" delay={60}>
-        <HomeSectionTitle title="Category Favorites" action=" " />
+      <section>
+        <RevealOnScroll delay={40}>
+          <HomeSectionTitle title="Category Favorites" action=" " />
+        </RevealOnScroll>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-2 xl:grid-cols-4">
           {[
             { title: 'Gentle Face Essentials', subtitle: 'Skin Wellness', bg: 'bg-[#ffd85d]' },
@@ -410,18 +424,22 @@ function HomePage() {
             </RevealOnScroll>
           ))}
         </div>
-      </RevealOnScroll>
+      </section>
 
-      <RevealOnScroll as="section" className="elevated-section rounded-[1.8rem] bg-[#b8efe7] p-5 shadow-[0_18px_38px_rgba(36,54,46,0.07)]" delay={60}>
-        <HomeSectionTitle title={beautyCare.title} action="View More Products" />
+      <section className="elevated-section rounded-[1.8rem] bg-[#b8efe7] p-5 shadow-[0_18px_38px_rgba(36,54,46,0.07)]">
+        <RevealOnScroll delay={40}>
+          <HomeSectionTitle title={beautyCare.title} action="View More Products" />
+        </RevealOnScroll>
         <ProductGrid products={beautyCare.products} sectionLabel="Beauty" />
-      </RevealOnScroll>
+      </section>
 
-      <RevealOnScroll as="section" delay={70}>
-        <div className="mb-5 flex items-center justify-between gap-4">
-          <h2 className="text-[1.45rem] font-extrabold text-[var(--color-heading)]">Latest Blog</h2>
-          <button className="text-sm font-bold text-[var(--color-accent)]">View All</button>
-        </div>
+      <section>
+        <RevealOnScroll delay={40}>
+          <div className="mb-5 flex items-center justify-between gap-4">
+            <h2 className="text-[1.45rem] font-extrabold text-[var(--color-heading)]">Latest Blog</h2>
+            <button className="text-sm font-bold text-[var(--color-accent)]">View All</button>
+          </div>
+        </RevealOnScroll>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {latestBlog.map((product, index) => (
             <RevealOnScroll
@@ -449,7 +467,7 @@ function HomePage() {
             </RevealOnScroll>
           ))}
         </div>
-      </RevealOnScroll>
+      </section>
 
       <RevealOnScroll as="section" className="rounded-[2rem] bg-white px-6 py-10 text-center shadow-[0_12px_24px_rgba(36,54,46,0.04)]" delay={60} direction="zoom">
         <h2 className="text-2xl font-extrabold text-[var(--color-heading)]">Subscribe to our newsletter</h2>

@@ -4,14 +4,14 @@ import { useAuth } from '../../features/auth/context/AuthContext'
 import { useCart } from '../../features/cart/context/CartContext'
 
 const navItems = [
-  'Home',
-  'About Us',
-  'Shop',
-  'Sellers',
-  'Mega Menu',
-  'Blog',
-  'Pages',
-  'Contact',
+  { label: 'Home', to: '/', hasChevron: true },
+  { label: 'About Us', to: '/about' },
+  { label: 'Shop', to: '/', hasChevron: true },
+  { label: 'Sellers', to: '/', hasChevron: true },
+  { label: 'Mega Menu', to: '/', hasChevron: true },
+  { label: 'Blog', to: '/', hasChevron: true },
+  { label: 'Pages', to: '/', hasChevron: true },
+  { label: 'Contact', to: '/contact' },
 ]
 
 function ChevronIcon({ className = 'h-4 w-4' }) {
@@ -201,14 +201,14 @@ function SiteHeader() {
           <nav className="flex flex-1 items-center justify-center gap-8 xl:gap-12">
             {navItems.map((item, index) => (
               <Link
-                key={item}
-                to="/"
+                key={item.label}
+                to={item.to}
                 className={`flex items-center gap-2 text-[16px] font-bold transition hover:text-[#0f8b86] ${
                   index === 0 ? 'text-[#0f8b86]' : 'text-[#111827]'
                 }`}
               >
-                {item}
-                {['Home', 'Shop', 'Sellers', 'Mega Menu', 'Blog', 'Pages'].includes(item) ? (
+                {item.label}
+                {item.hasChevron ? (
                   <ChevronIcon className="h-4 w-4 opacity-75" />
                 ) : null}
               </Link>
@@ -268,15 +268,15 @@ function SiteHeader() {
               <p className="text-[12px] font-bold uppercase tracking-[0.15em] text-[#8d9ab1] mb-2">Navigation</p>
               {navItems.map((item, index) => (
                 <Link
-                  key={item}
-                  to="/"
+                  key={item.label}
+                  to={item.to}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`flex items-center justify-between rounded-xl px-4 py-3 text-[16px] font-bold transition hover:bg-[#f8fafc] hover:text-[#0f8b86] ${
                     index === 0 ? 'text-[#0f8b86] bg-[#0f8b86]/5' : 'text-[#111827]'
                   }`}
                 >
-                  <span>{item}</span>
-                  {['Home', 'Shop', 'Sellers', 'Mega Menu', 'Blog', 'Pages'].includes(item) && (
+                  <span>{item.label}</span>
+                  {item.hasChevron && (
                     <ChevronIcon className="h-4 w-4 text-[#8d9ab1]" />
                   )}
                 </Link>

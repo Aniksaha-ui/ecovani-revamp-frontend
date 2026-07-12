@@ -10,12 +10,16 @@ import PaymentSuccessPage from '../../features/payment/pages/PaymentSuccessPage'
 import PaymentFailedPage from '../../features/payment/pages/PaymentFailedPage'
 import OrdersPage from '../../features/orders/pages/OrdersPage'
 import OrderDetailsPage from '../../features/orders/pages/OrderDetailsPage'
+import AboutPage from '../../features/about/pages/AboutPage'
+import ContactPage from '../../features/contact/pages/ContactPage'
 
 function AppRouter() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/orders" element={<OrdersPage />} />

@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 function Footer() {
   return (
     <footer className="overflow-hidden rounded-t-[2rem] bg-[#0f5c58] text-white">
@@ -18,10 +20,18 @@ function Footer() {
           <div>
             <h3 className="text-sm font-bold uppercase tracking-[0.22em] text-white/80">About</h3>
             <ul className="mt-4 space-y-3 text-sm text-white/74">
-              <li>Our Company</li>
+              <li>
+                <Link to="/about" className="transition hover:text-white">
+                  Our Company
+                </Link>
+              </li>
               <li>Privacy Policy</li>
               <li>Terms & Conditions</li>
-              <li>Contact Us</li>
+              <li>
+                <Link to="/contact" className="transition hover:text-white">
+                  Contact Us
+                </Link>
+              </li>
             </ul>
           </div>
 

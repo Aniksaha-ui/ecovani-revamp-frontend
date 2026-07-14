@@ -7,6 +7,7 @@ import { useCart } from '../../cart/context/CartContext'
 const MY_CART_ENDPOINT = import.meta.env.VITE_MY_CART_ENDPOINT || 'users/mycart'
 const APPLY_COUPON_ENDPOINT = import.meta.env.VITE_APPLY_COUPON_ENDPOINT || 'users/applycoupon'
 const ORDER_ENDPOINT = import.meta.env.VITE_ORDER_ENDPOINT || 'users/order'
+const USER_ADDRESSES_ENDPOINT = import.meta.env.VITE_USER_ADDRESSES_ENDPOINT || 'users/addresses'
 const IMAGE_BASE_URL = (import.meta.env.VITE_IMAGE_URL || '')
   .replaceAll('"', '')
   .replace(/\s+/g, '')
@@ -85,6 +86,49 @@ function normalizeCartItem(item, index) {
   }
 }
 
+function buildInitialFormState(user) {
+  return {
+    firstName: user?.name?.split(' ')?.[0] || '',
+    lastName: user?.name?.split(' ')?.slice(1).join(' ') || '',
+    phone: user?.phone || '',
+    email: user?.email || '',
+    country: user?.country || 'Bangladesh',
+    city: user?.city || '',
+    state: user?.state || '',
+    zip: user?.postcode || '',
+    address: user?.address1 || '',
+    apartment: user?.address2 || '',
+    deliveryTime: deliverySlots[0],
+    shipmentType: shipmentOptions[0].id,
+    addressType: addressTypes[0],
+    paymentMethod: 'ssl',
+  }
+}
+
+function normalizeSavedAddress(item, index) {
+  const formattedAddress = item?.formatted_address || [
+    item?.address_line1 || '',
+    item?.address_line2 || '',
+    item?.city || '',
+    item?.state || '',
+    item?.postal_code || '',
+    item?.country || '',
+  ].filter(Boolean).join(', ')
+
+  return {
+    id: Number(item?.id || index + 1),
+    addressLine1: item?.address_line1 || '',
+    addressLine2: item?.address_line2 || '',
+    city: item?.city || '',
+    state: item?.state || '',
+    postalCode: item?.postal_code || '',
+    country: item?.country || 'Bangladesh',
+    phone: item?.phone || '',
+    isPrimary: Boolean(item?.is_primary),
+    formattedAddress,
+  }
+}
+
 function FieldShell({ label, error = '', children }) {
   return (
     <label className="grid gap-2 text-sm font-medium text-[var(--color-heading)]">
@@ -119,22 +163,17 @@ function CheckoutPage() {
     couponAmount: 0,
     grandTotal: 0,
   })
-  const [formState, setFormState] = useState({
-    firstName: user?.name?.split(' ')?.[0] || '',
-    lastName: user?.name?.split(' ')?.slice(1).join(' ') || '',
-    phone: user?.phone || '',
-    email: user?.email || '',
-    country: user?.country || 'Bangladesh',
-    city: user?.city || '',
-    state: user?.state || '',
-    zip: user?.postcode || '',
-    address: user?.address1 || '',
-    apartment: user?.address2 || '',
-    deliveryTime: deliverySlots[0],
-    shipmentType: shipmentOptions[0].id,
-    addressType: addressTypes[0],
-    paymentMethod: 'ssl',
+  const [addressBookState, setAddressBookState] = useState({
+    isLoading: Boolean(isAuthenticated),
+    isSaving: false,
+    error: '',
+    items: [],
   })
+  const [addressMode, setAddressMode] = useState('new')
+  const [selectedAddressId, setSelectedAddressId] = useState(null)
+  const [saveAddressForFuture, setSaveAddressForFuture] = useState(false)
+  const [makePrimaryAddress, setMakePrimaryAddress] = useState(false)
+  const [formState, setFormState] = useState(() => buildInitialFormState(user))
   const [formErrors, setFormErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [saveMessage, setSaveMessage] = useState('')
@@ -184,65 +223,150 @@ function CheckoutPage() {
     }
   }, [fallbackItems])
 
-  const items = cartState.items
+  useEffect(() => {
+    setFormState((current) => ({
+      ...current,
+      firstName: user?.name?.split(' ')?.[0] || '',
+      lastName: user?.name?.split(' ')?.slice(1).join(' ') || '',
+      email: user?.email || current.email || '',
+    }))
+  }, [user])
 
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadSavedAddresses() {
+      if (!isAuthenticated) {
+        setAddressBookState({
+          isLoading: false,
+          isSaving: false,
+          error: '',
+          items: [],
+        })
+        setAddressMode('new')
+        setSelectedAddressId(null)
+        return
+      }
+
+      setAddressBookState((current) => ({
+        ...current,
+        isLoading: true,
+        error: '',
+      }))
+
+      try {
+        const response = await apiClient.get(USER_ADDRESSES_ENDPOINT)
+        const savedAddresses = extractArray(response.data).map(normalizeSavedAddress)
+
+        if (!isMounted) {
+          return
+        }
+
+        setAddressBookState({
+          isLoading: false,
+          isSaving: false,
+          error: '',
+          items: savedAddresses,
+        })
+
+        const defaultAddress = savedAddresses.find((item) => item.isPrimary) || savedAddresses[0] || null
+
+        if (defaultAddress) {
+          applySavedAddress(defaultAddress, savedAddresses)
+        } else {
+          setAddressMode('new')
+          setSelectedAddressId(null)
+          setSaveAddressForFuture(true)
+          setMakePrimaryAddress(true)
+        }
+      } catch {
+        if (!isMounted) {
+          return
+        }
+
+        setAddressBookState({
+          isLoading: false,
+          isSaving: false,
+          error: 'Saved addresses could not be loaded right now.',
+          items: [],
+        })
+        setAddressMode('new')
+        setSelectedAddressId(null)
+      }
+    }
+
+    loadSavedAddresses()
+
+    return () => {
+      isMounted = false
+    }
+  }, [isAuthenticated])
+
+  const items = cartState.items
+  const selectedSavedAddress = addressBookState.items.find((item) => item.id === selectedAddressId) || null
   const subtotal = useMemo(
     () => items.reduce((total, item) => total + Number(item.rawPrice || 0) * Number(item.quantity || 0), 0),
     [items],
   )
-
-  if (cartState.isLoading) {
-    return (
-      <section className="mx-auto max-w-3xl px-4 py-12 flex min-h-[60vh] items-center justify-center">
-        <div className="w-full rounded-[2rem] border border-[#d8e1ee] bg-white p-10 text-center shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-[#0f8b86]/10 text-[#0f8b86]">
-            <svg className="h-10 w-10 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
-          </div>
-          <h1 className="text-xl font-bold text-[#1d2433]">Loading checkout details...</h1>
-        </div>
-      </section>
-    )
-  }
-
-  if (!items.length) {
-    return (
-      <section className="mx-auto max-w-3xl px-4 py-12 flex min-h-[60vh] items-center justify-center">
-        <div className="w-full rounded-[2rem] border border-[#d8e1ee] bg-white p-10 text-center shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-[#0f8b86]/10 text-[#0f8b86]">
-            <svg className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-            </svg>
-          </div>
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0f8b86]">
-            Checkout
-          </p>
-          <h1 className="mt-3 text-3xl font-black tracking-[-0.04em] text-[#1d2433]">
-            Your checkout is empty
-          </h1>
-          <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-[#67768c]">
-            There are no items ready for checkout. Please add products to your cart before proceeding.
-          </p>
-          <Link
-            to="/"
-            className="mt-8 inline-flex h-14 items-center justify-center rounded-full bg-[#0f8b86] px-8 text-sm font-bold uppercase tracking-[0.14em] text-white shadow-[0_12px_24px_rgba(15,139,134,0.18)] transition hover:bg-[#0b7672]"
-          >
-            Start Shopping
-          </Link>
-        </div>
-      </section>
-    )
-  }
   const selectedShipment = shipmentOptions.find((option) => option.id === formState.shipmentType) || shipmentOptions[0]
   const shipmentAmount = selectedShipment.amount
   const vatAmount = 0
   const discountAmount = Number(couponState.couponAmount || 0)
   const totalAmount = Math.max(0, subtotal + shipmentAmount + vatAmount - discountAmount)
 
+  function applySavedAddress(address, nextItems = addressBookState.items) {
+    setFormState((current) => ({
+      ...current,
+      address: address.addressLine1 || '',
+      apartment: address.addressLine2 || '',
+      city: address.city || '',
+      state: address.state || '',
+      zip: address.postalCode || '',
+      country: address.country || current.country || 'Bangladesh',
+      phone: address.phone || current.phone || '',
+    }))
+    setAddressBookState((current) => ({
+      ...current,
+      items: nextItems,
+      error: '',
+    }))
+    setAddressMode('saved')
+    setSelectedAddressId(address.id)
+    setSaveAddressForFuture(false)
+    setMakePrimaryAddress(false)
+    setSaveMessage('')
+    setFormErrors((current) => ({
+      ...current,
+      address: '',
+      city: '',
+      state: '',
+      zip: '',
+      country: '',
+      phone: '',
+    }))
+  }
+
+  function handleUseNewAddress() {
+    setAddressMode('new')
+    setSelectedAddressId(null)
+    setSaveAddressForFuture(true)
+    setMakePrimaryAddress(addressBookState.items.length === 0)
+    setSaveMessage('')
+    setFormState((current) => ({
+      ...current,
+      address: '',
+      apartment: '',
+      city: '',
+      state: '',
+      zip: '',
+      country: current.country || 'Bangladesh',
+      phone: user?.phone || '',
+    }))
+  }
+
   function handleInputChange(event) {
     const { name, value } = event.target
+
     setFormState((current) => ({
       ...current,
       [name]: value,
@@ -252,6 +376,11 @@ function CheckoutPage() {
       [name]: '',
     }))
     setSaveMessage('')
+
+    if (['address', 'apartment', 'city', 'state', 'zip', 'country', 'phone'].includes(name) && addressMode === 'saved') {
+      setAddressMode('new')
+      setSelectedAddressId(null)
+    }
   }
 
   function validateForm() {
@@ -323,6 +452,9 @@ function CheckoutPage() {
       const response = await apiClient.post(ORDER_ENDPOINT, {
         payment_method: formState.paymentMethod,
         totalAmount: couponState.couponAmount > 0 ? couponState.grandTotal + shipmentAmount : totalAmount,
+        address_id: addressMode === 'saved' ? selectedAddressId : null,
+        save_address: isAuthenticated && addressMode === 'new' ? saveAddressForFuture : false,
+        is_primary_address: isAuthenticated && addressMode === 'new' ? makePrimaryAddress : false,
         products: items.map((item) => ({
           product_id: item.productId,
           quantity: item.quantity,
@@ -363,33 +495,123 @@ function CheckoutPage() {
     }
   }
 
-  function handleSaveDetails() {
+  async function handleSaveDetails() {
     if (!validateForm()) {
       return
     }
 
-    setSaveMessage('Shipping details saved for this checkout session.')
+    if (!isAuthenticated) {
+      setSaveMessage('Shipping details saved for this checkout session.')
+      return
+    }
+
+    if (addressMode === 'saved' && selectedAddressId) {
+      setSaveMessage('Saved address selected for this checkout.')
+      return
+    }
+
+    setAddressBookState((current) => ({
+      ...current,
+      isSaving: true,
+      error: '',
+    }))
+
+    try {
+      const response = await apiClient.post(USER_ADDRESSES_ENDPOINT, {
+        address_line1: formState.address,
+        address_line2: formState.apartment,
+        city: formState.city,
+        state: formState.state,
+        postal_code: formState.zip,
+        country: formState.country,
+        phone: formState.phone,
+        is_primary: makePrimaryAddress,
+      })
+
+      const savedAddress = normalizeSavedAddress(response.data?.data || {}, 0)
+      const nextItems = [savedAddress, ...addressBookState.items.filter((item) => item.id !== savedAddress.id)]
+        .map((item) => (savedAddress.isPrimary && item.id !== savedAddress.id ? { ...item, isPrimary: false } : item))
+
+      setAddressBookState({
+        isLoading: false,
+        isSaving: false,
+        error: '',
+        items: nextItems,
+      })
+      applySavedAddress(savedAddress, nextItems)
+      setSaveMessage(response.data?.message || 'Address saved for future orders.')
+    } catch {
+      setAddressBookState((current) => ({
+        ...current,
+        isSaving: false,
+        error: 'Address could not be saved right now.',
+      }))
+      setSaveMessage('')
+    }
   }
 
   function handleResetForm() {
-    setFormState((current) => ({
-      ...current,
-      firstName: '',
-      lastName: '',
-      phone: '',
-      email: user?.email || '',
-      country: 'Bangladesh',
-      city: '',
-      state: '',
-      zip: '',
-      address: '',
-      apartment: '',
-      deliveryTime: deliverySlots[0],
-      shipmentType: shipmentOptions[0].id,
-      addressType: addressTypes[0],
-    }))
     setFormErrors({})
     setSaveMessage('')
+
+    if (addressBookState.items.length) {
+      const fallbackAddress = addressBookState.items.find((item) => item.isPrimary) || addressBookState.items[0]
+      if (fallbackAddress) {
+        applySavedAddress(fallbackAddress)
+      }
+      return
+    }
+
+    setFormState(buildInitialFormState(user))
+    setAddressMode('new')
+    setSelectedAddressId(null)
+    setSaveAddressForFuture(isAuthenticated)
+    setMakePrimaryAddress(false)
+  }
+
+  if (cartState.isLoading) {
+    return (
+      <section className="mx-auto max-w-3xl px-4 py-12 flex min-h-[60vh] items-center justify-center">
+        <div className="w-full rounded-[2rem] border border-[#d8e1ee] bg-white p-10 text-center shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-[#0f8b86]/10 text-[#0f8b86]">
+            <svg className="h-10 w-10 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+          </div>
+          <h1 className="text-xl font-bold text-[#1d2433]">Loading checkout details...</h1>
+        </div>
+      </section>
+    )
+  }
+
+  if (!items.length) {
+    return (
+      <section className="mx-auto max-w-3xl px-4 py-12 flex min-h-[60vh] items-center justify-center">
+        <div className="w-full rounded-[2rem] border border-[#d8e1ee] bg-white p-10 text-center shadow-[0_16px_40px_rgba(29,42,58,0.06)]">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-[#0f8b86]/10 text-[#0f8b86]">
+            <svg className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+            </svg>
+          </div>
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0f8b86]">
+            Checkout
+          </p>
+          <h1 className="mt-3 text-3xl font-black tracking-[-0.04em] text-[#1d2433]">
+            Your checkout is empty
+          </h1>
+          <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-[#67768c]">
+            There are no items ready for checkout. Please add products to your cart before proceeding.
+          </p>
+          <Link
+            to="/"
+            className="mt-8 inline-flex h-14 items-center justify-center rounded-full bg-[#0f8b86] px-8 text-sm font-bold uppercase tracking-[0.14em] text-white shadow-[0_12px_24px_rgba(15,139,134,0.18)] transition hover:bg-[#0b7672]"
+          >
+            Start Shopping
+          </Link>
+        </div>
+      </section>
+    )
   }
 
   return (
@@ -497,53 +719,155 @@ function CheckoutPage() {
                 </FieldShell>
               </div>
 
-              <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-[1.1fr_1.1fr_1fr_1fr]">
-                <FieldShell label="Country / Region" error={formErrors.country}>
-                  <select
-                    className={inputClass(Boolean(formErrors.country))}
-                    name="country"
-                    value={formState.country}
-                    onChange={handleInputChange}
-                  >
-                    <option>Bangladesh</option>
-                    <option>India</option>
-                    <option>Pakistan</option>
-                  </select>
-                </FieldShell>
-                <FieldShell label="City" error={formErrors.city}>
-                  <input className={inputClass(Boolean(formErrors.city))} name="city" value={formState.city} onChange={handleInputChange} placeholder="City" />
-                </FieldShell>
-                <FieldShell label="State" error={formErrors.state}>
-                  <input className={inputClass(Boolean(formErrors.state))} name="state" value={formState.state} onChange={handleInputChange} placeholder="State" />
-                </FieldShell>
-                <FieldShell label="Zip Code" error={formErrors.zip}>
-                  <input className={inputClass(Boolean(formErrors.zip))} name="zip" value={formState.zip} onChange={handleInputChange} placeholder="Zip Code" />
-                </FieldShell>
-              </div>
+              {isAuthenticated ? (
+                <div className="space-y-4 border-t border-[#edf1f7] pt-8">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <h3 className="text-[1.2rem] font-black text-[#42506a]">Saved Addresses</h3>
+                      <p className="mt-1 text-sm text-[#67768c]">Choose a saved address or add a new one for this order.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleUseNewAddress}
+                      className="inline-flex items-center justify-center rounded-full border border-[#d9e2ef] px-5 py-3 text-sm font-bold text-[#37445a] transition hover:border-[#0f8b86] hover:text-[#0f8b86]"
+                    >
+                      Use New Address
+                    </button>
+                  </div>
 
-              <FieldShell label="Street Address" error={formErrors.address}>
-                <textarea
-                  className={`min-h-36 rounded-[1.7rem] border bg-white px-5 py-4 text-sm text-[var(--color-heading)] outline-none transition placeholder:text-[#8ca0ba] focus:ring-4 ${
-                    formErrors.address
-                      ? 'border-[#dc2626] focus:border-[#dc2626] focus:ring-[#dc2626]/10'
-                      : 'border-[#d9e2ef] focus:border-[#0f8b86] focus:ring-[#0f8b86]/10'
-                  }`}
-                  name="address"
-                  value={formState.address}
-                  onChange={handleInputChange}
-                  placeholder="House no, road, area"
-                />
-              </FieldShell>
+                  {addressBookState.error ? (
+                    <div className="rounded-[1.3rem] border border-[#f3c5c5] bg-[#fff6f6] px-4 py-3 text-sm font-medium text-[#b42318]">
+                      {addressBookState.error}
+                    </div>
+                  ) : null}
 
-              <FieldShell label="Apartments, suit, unit, etc (Optional)">
-                <textarea
-                  className="min-h-32 rounded-[1.7rem] border border-[#d9e2ef] bg-white px-5 py-4 text-sm text-[var(--color-heading)] outline-none transition placeholder:text-[#8ca0ba] focus:border-[#0f8b86] focus:ring-4 focus:ring-[#0f8b86]/10"
-                  name="apartment"
-                  value={formState.apartment}
-                  onChange={handleInputChange}
-                  placeholder="Apartments, suit, unit, etc (Optional)"
-                />
-              </FieldShell>
+                  {addressBookState.isLoading ? (
+                    <div className="rounded-[1.5rem] border border-[#d8e1ee] bg-[#f8fafc] px-5 py-4 text-sm font-medium text-[#67768c]">
+                      Loading saved addresses...
+                    </div>
+                  ) : null}
+
+                  {addressBookState.items.length ? (
+                    <div className="grid gap-4 md:grid-cols-2">
+                      {addressBookState.items.map((address) => (
+                        <button
+                          key={address.id}
+                          type="button"
+                          onClick={() => applySavedAddress(address)}
+                          className={`rounded-[1.5rem] border p-5 text-left transition ${
+                            selectedAddressId === address.id && addressMode === 'saved'
+                              ? 'border-[#0f8b86] bg-[#f7fbfb] shadow-[0_12px_24px_rgba(15,139,134,0.08)]'
+                              : 'border-[#d8e1ee] bg-white hover:border-[#0f8b86]'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="text-base font-black text-[#1d2433]">
+                              {address.isPrimary ? 'Primary Address' : `Saved Address #${address.id}`}
+                            </p>
+                            {address.isPrimary ? (
+                              <span className="rounded-full bg-[#0f8b86]/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-[#0f8b86]">
+                                Default
+                              </span>
+                            ) : null}
+                          </div>
+                          <p className="mt-3 text-sm leading-6 text-[#42506a]">{address.formattedAddress}</p>
+                          {address.phone ? <p className="mt-2 text-sm font-semibold text-[#1d2433]">{address.phone}</p> : null}
+                        </button>
+                      ))}
+                    </div>
+                  ) : !addressBookState.isLoading ? (
+                    <div className="rounded-[1.5rem] border border-dashed border-[#d8e1ee] bg-[#f8fafc] px-5 py-4 text-sm text-[#67768c]">
+                      No saved addresses yet. Add one below and save it for your next order.
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {addressMode === 'saved' && selectedSavedAddress ? (
+                <div className="rounded-[1.7rem] border border-[#d8e1ee] bg-[#f8fafc] p-5">
+                  <p className="text-[13px] font-bold uppercase tracking-[0.18em] text-[#0f8b86]">Selected shipping address</p>
+                  <p className="mt-3 text-base font-black text-[#1d2433]">
+                    {selectedSavedAddress.isPrimary ? 'Primary Address' : `Saved Address #${selectedSavedAddress.id}`}
+                  </p>
+                  <p className="mt-3 text-sm leading-7 text-[#42506a]">{selectedSavedAddress.formattedAddress}</p>
+                  {selectedSavedAddress.phone ? (
+                    <p className="mt-3 text-sm font-semibold text-[#1d2433]">Phone: {selectedSavedAddress.phone}</p>
+                  ) : null}
+                </div>
+              ) : (
+                <>
+                  <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-[1.1fr_1.1fr_1fr_1fr]">
+                    <FieldShell label="Country / Region" error={formErrors.country}>
+                      <select
+                        className={inputClass(Boolean(formErrors.country))}
+                        name="country"
+                        value={formState.country}
+                        onChange={handleInputChange}
+                      >
+                        <option>Bangladesh</option>
+                        <option>India</option>
+                        <option>Pakistan</option>
+                      </select>
+                    </FieldShell>
+                    <FieldShell label="City" error={formErrors.city}>
+                      <input className={inputClass(Boolean(formErrors.city))} name="city" value={formState.city} onChange={handleInputChange} placeholder="City" />
+                    </FieldShell>
+                    <FieldShell label="State" error={formErrors.state}>
+                      <input className={inputClass(Boolean(formErrors.state))} name="state" value={formState.state} onChange={handleInputChange} placeholder="State" />
+                    </FieldShell>
+                    <FieldShell label="Zip Code" error={formErrors.zip}>
+                      <input className={inputClass(Boolean(formErrors.zip))} name="zip" value={formState.zip} onChange={handleInputChange} placeholder="Zip Code" />
+                    </FieldShell>
+                  </div>
+
+                  <FieldShell label="Street Address" error={formErrors.address}>
+                    <textarea
+                      className={`min-h-36 rounded-[1.7rem] border bg-white px-5 py-4 text-sm text-[var(--color-heading)] outline-none transition placeholder:text-[#8ca0ba] focus:ring-4 ${
+                        formErrors.address
+                          ? 'border-[#dc2626] focus:border-[#dc2626] focus:ring-[#dc2626]/10'
+                          : 'border-[#d9e2ef] focus:border-[#0f8b86] focus:ring-[#0f8b86]/10'
+                      }`}
+                      name="address"
+                      value={formState.address}
+                      onChange={handleInputChange}
+                      placeholder="House no, road, area"
+                    />
+                  </FieldShell>
+
+                  <FieldShell label="Apartments, suit, unit, etc (Optional)">
+                    <textarea
+                      className="min-h-32 rounded-[1.7rem] border border-[#d9e2ef] bg-white px-5 py-4 text-sm text-[var(--color-heading)] outline-none transition placeholder:text-[#8ca0ba] focus:border-[#0f8b86] focus:ring-4 focus:ring-[#0f8b86]/10"
+                      name="apartment"
+                      value={formState.apartment}
+                      onChange={handleInputChange}
+                      placeholder="Apartments, suit, unit, etc (Optional)"
+                    />
+                  </FieldShell>
+
+                  {isAuthenticated ? (
+                    <div className="grid gap-3 rounded-[1.5rem] border border-[#d8e1ee] bg-[#f8fafc] p-5">
+                      <label className="flex items-center gap-3 text-sm font-semibold text-[#1d2433]">
+                        <input
+                          type="checkbox"
+                          checked={saveAddressForFuture}
+                          onChange={(event) => setSaveAddressForFuture(event.target.checked)}
+                          className="h-5 w-5 border-[#d6e0ee] text-[#0f8b86] focus:ring-[#0f8b86]"
+                        />
+                        Save this address for next time
+                      </label>
+                      <label className="flex items-center gap-3 text-sm font-semibold text-[#1d2433]">
+                        <input
+                          type="checkbox"
+                          checked={makePrimaryAddress}
+                          onChange={(event) => setMakePrimaryAddress(event.target.checked)}
+                          className="h-5 w-5 border-[#d6e0ee] text-[#0f8b86] focus:ring-[#0f8b86]"
+                        />
+                        Make this my default address
+                      </label>
+                    </div>
+                  ) : null}
+                </>
+              )}
 
               <div className="space-y-4 border-t border-[#edf1f7] pt-8">
                 <h3 className="text-[1.2rem] font-black text-[#42506a]">Delivery Time</h3>
@@ -615,9 +939,10 @@ function CheckoutPage() {
                 <button
                   type="button"
                   onClick={handleSaveDetails}
-                  className="inline-flex w-full sm:w-auto min-w-32 items-center justify-center rounded-full bg-[#0f8b86] px-6 py-3 text-sm font-bold text-white shadow-[0_12px_24px_rgba(15,139,134,0.18)] transition hover:bg-[#0b7672]"
+                  disabled={addressBookState.isSaving}
+                  className="inline-flex w-full sm:w-auto min-w-32 items-center justify-center rounded-full bg-[#0f8b86] px-6 py-3 text-sm font-bold text-white shadow-[0_12px_24px_rgba(15,139,134,0.18)] transition hover:bg-[#0b7672] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Save
+                  {addressBookState.isSaving ? 'Saving...' : 'Save'}
                 </button>
               </div>
             </div>

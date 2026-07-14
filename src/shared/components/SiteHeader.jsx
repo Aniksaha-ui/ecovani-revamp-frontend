@@ -1,16 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../features/auth/context/AuthContext'
 import { useCart } from '../../features/cart/context/CartContext'
+import { fetchHomeCategories } from '../../features/home/api/homeApi'
 
 const navItems = [
-  { label: 'Home', to: '/', hasChevron: true },
+  { label: 'Home', to: '/' },
   { label: 'About Us', to: '/about' },
-  { label: 'Shop', to: '/', hasChevron: true },
-  { label: 'Sellers', to: '/', hasChevron: true },
-  { label: 'Mega Menu', to: '/', hasChevron: true },
-  { label: 'Blog', to: '/', hasChevron: true },
-  { label: 'Pages', to: '/', hasChevron: true },
   { label: 'Contact', to: '/contact' },
 ]
 
@@ -26,6 +22,51 @@ function SiteHeader() {
   const { isAuthenticated, user, logout } = useAuth()
   const { itemCount } = useCart()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false)
+  const [categories, setCategories] = useState([])
+  const categoryMenuRef = useRef(null)
+
+  useEffect(() => {
+    let isMounted = true
+
+    fetchHomeCategories()
+      .then((items) => {
+        if (isMounted) {
+          setCategories(items)
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setCategories([])
+        }
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  useEffect(() => {
+    function handlePointerDown(event) {
+      if (!categoryMenuRef.current?.contains(event.target)) {
+        setIsCategoryMenuOpen(false)
+      }
+    }
+
+    function handleEscape(event) {
+      if (event.key === 'Escape') {
+        setIsCategoryMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handlePointerDown)
+    document.addEventListener('keydown', handleEscape)
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [])
 
   return (
     <header className="w-full border-y border-[#d9dfeb] bg-white">
@@ -187,16 +228,53 @@ function SiteHeader() {
       {/* Desktop Sub-navigation (Categories, Links, Support) */}
       <div className="hidden lg:block">
         <div className="mx-auto flex w-[92%] lg:w-[85%] xl:w-[80%] max-w-[1720px] items-center justify-between gap-6 px-4 py-[14px]">
-          <button className="inline-flex h-[48px] min-w-[264px] items-center justify-center gap-3 rounded-[8px] bg-[#0f8b86] px-6 text-[16px] font-bold text-white shadow-[0_8px_20px_rgba(15,139,134,0.2)] transition hover:bg-[#0b7672] cursor-pointer">
-            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="4" y="4" width="6" height="6" rx="1.2" />
-              <rect x="14" y="4" width="6" height="6" rx="1.2" />
-              <rect x="4" y="14" width="6" height="6" rx="1.2" />
-              <rect x="14" y="14" width="6" height="6" rx="1.2" />
-            </svg>
-            Explore All Categories
-            <ChevronIcon className="h-5 w-5" />
-          </button>
+          <div ref={categoryMenuRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setIsCategoryMenuOpen((current) => !current)}
+              className="inline-flex h-[48px] min-w-[264px] items-center justify-center gap-3 rounded-[8px] bg-[#0f8b86] px-6 text-[16px] font-bold text-white shadow-[0_8px_20px_rgba(15,139,134,0.2)] transition hover:bg-[#0b7672] cursor-pointer"
+              aria-expanded={isCategoryMenuOpen}
+              aria-haspopup="menu"
+            >
+              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="4" y="4" width="6" height="6" rx="1.2" />
+                <rect x="14" y="4" width="6" height="6" rx="1.2" />
+                <rect x="4" y="14" width="6" height="6" rx="1.2" />
+                <rect x="14" y="14" width="6" height="6" rx="1.2" />
+              </svg>
+              Explore All Categories
+              <ChevronIcon className={`h-5 w-5 transition-transform ${isCategoryMenuOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {isCategoryMenuOpen ? (
+              <div className="absolute left-0 top-[calc(100%+12px)] z-40 w-[320px] rounded-[1.2rem] border border-[#d9dfeb] bg-white p-3 shadow-[0_22px_44px_rgba(17,24,39,0.12)]">
+                <div className="mb-2 px-3 pt-1">
+                  <p className="text-[12px] font-bold uppercase tracking-[0.18em] text-[#8d9ab1]">Categories</p>
+                </div>
+                <div className="space-y-1">
+                  {categories.map((category) => (
+                    <Link
+                      key={category.id}
+                      to={`/categories/${category.id}/products`}
+                      state={{ categoryTitle: category.title }}
+                      onClick={() => setIsCategoryMenuOpen(false)}
+                      className="flex items-start justify-between gap-3 rounded-[0.95rem] px-3 py-3 transition hover:bg-[#f8fafc]"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-[15px] font-bold text-[#111827]">{category.title}</p>
+                        <p className="mt-1 line-clamp-2 text-[12px] leading-5 text-[#6b7280]">
+                          {category.description || category.itemCount || 'Browse this category'}
+                        </p>
+                      </div>
+                      <span className="shrink-0 text-[12px] font-semibold text-[#0f8b86]">
+                        {category.itemCount || 'Open'}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
 
           <nav className="flex flex-1 items-center justify-center gap-8 xl:gap-12">
             {navItems.map((item, index) => (

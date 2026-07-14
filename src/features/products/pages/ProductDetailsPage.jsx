@@ -3,8 +3,6 @@ import { Link, useParams } from 'react-router-dom'
 import { fetchProductDetails } from '../api/productApi'
 import { useCart } from '../../cart/context/CartContext'
 
-const FACEBOOK_APP_ID = (import.meta.env.VITE_FACEBOOK_APP_ID || '').replaceAll('"', '').trim()
-
 function CartIcon({ className = 'h-5 w-5' }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className}>
@@ -23,16 +21,6 @@ function HeartIcon({ className = 'h-5 w-5' }) {
         strokeLinejoin="round"
         d="M12 20.2s-6.7-4.4-9-8.2C1.4 9.2 2.1 5.8 5.4 4.6c2-.7 4.2 0 5.6 1.7 1.4-1.7 3.6-2.4 5.6-1.7 3.3 1.2 4 4.6 2.4 7.4-2.3 3.8-9 8.2-9 8.2Z"
       />
-    </svg>
-  )
-}
-
-function ShareIcon({ className = 'h-5 w-5' }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M7 12v7a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-7" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="m8.5 7.5 3.5-3.5 3.5 3.5" />
     </svg>
   )
 }
@@ -88,60 +76,6 @@ function splitDescription(text) {
     .filter(Boolean)
 }
 
-function resolveProductUrl(productId) {
-  if (typeof window === 'undefined') {
-    return ''
-  }
-
-  return new URL(`/products/${productId}`, window.location.origin).toString()
-}
-
-function buildShareLinks({ pageUrl, title }) {
-  const encodedUrl = encodeURIComponent(pageUrl)
-  const encodedTitle = encodeURIComponent(title)
-
-  return [
-    {
-      id: 'facebook',
-      label: 'Facebook',
-      href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-    },
-    {
-      id: 'whatsapp',
-      label: 'WhatsApp',
-      href: `https://wa.me/?text=${encodeURIComponent(`${title} ${pageUrl}`)}`,
-    },
-    {
-      id: 'x',
-      label: 'X',
-      href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
-    },
-    {
-      id: 'linkedin',
-      label: 'LinkedIn',
-      href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
-    },
-  ]
-}
-
-function buildFacebookCommentsUrl(pageUrl) {
-  const params = new URLSearchParams({
-    href: pageUrl,
-    locale: 'en_US',
-    num_posts: '5',
-    order_by: 'reverse_time',
-    sdk: 'joey',
-    version: 'v23.0',
-    width: '100%',
-  })
-
-  if (FACEBOOK_APP_ID) {
-    params.set('appId', FACEBOOK_APP_ID)
-  }
-
-  return `https://www.facebook.com/plugins/comments.php?${params.toString()}`
-}
-
 function ProductDetailsPage() {
   const { productId } = useParams()
   const { addItem, getItemQuantity } = useCart()
@@ -152,13 +86,8 @@ function ProductDetailsPage() {
   })
   const [buttonLabel, setButtonLabel] = useState('Add to Cart')
   const [quantity, setQuantity] = useState(1)
-  const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [activeColor, setActiveColor] = useState(0)
   const [activeTab, setActiveTab] = useState('details')
-  const [copyStatus, setCopyStatus] = useState('')
-  const galleryImages = state.product?.image
-    ? [state.product.image, state.product.image, state.product.image]
-    : ['', '', '']
 
   useEffect(() => {
     let isMounted = true
@@ -166,10 +95,8 @@ function ProductDetailsPage() {
     async function loadProduct() {
       setButtonLabel('Add to Cart')
       setQuantity(1)
-      setActiveImageIndex(0)
       setActiveColor(0)
       setActiveTab('details')
-      setCopyStatus('')
 
       try {
         const product = await fetchProductDetails(productId)
@@ -202,8 +129,6 @@ function ProductDetailsPage() {
       isMounted = false
     }
   }, [productId])
-
-  const shareUrl = resolveProductUrl(state.product?.id || productId)
 
   if (state.isLoading) {
     return <DetailSkeleton />
@@ -252,11 +177,6 @@ function ProductDetailsPage() {
     { id: 'reviews', label: `Customer Reviews (${128})` },
   ]
   const sizeOptions = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL']
-  const shareLinks = buildShareLinks({
-    pageUrl: shareUrl,
-    title: product.name,
-  })
-  const facebookCommentsUrl = buildFacebookCommentsUrl(shareUrl)
 
   function handleAddToCart() {
     if (!isInStock || buttonLabel === 'Adding...') {
@@ -282,34 +202,6 @@ function ProductDetailsPage() {
     setQuantity(Math.max(1, Math.min(maxPurchasableQuantity, nextQuantity)))
   }
 
-  async function handleShareFallback() {
-    if (!shareUrl || typeof navigator === 'undefined') {
-      return
-    }
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: product.name,
-          text: `Check out ${product.name}`,
-          url: shareUrl,
-        })
-        return
-      } catch {
-        // User cancelled or browser declined; continue to copy fallback.
-      }
-    }
-
-    try {
-      await navigator.clipboard.writeText(shareUrl)
-      setCopyStatus('Product link copied.')
-      window.setTimeout(() => setCopyStatus(''), 2400)
-    } catch {
-      setCopyStatus('Unable to copy the product link.')
-      window.setTimeout(() => setCopyStatus(''), 2400)
-    }
-  }
-
   return (
     <section className="mx-auto max-w-[1380px] px-4 py-8 md:px-6 lg:py-10">
       <div className="mb-8 flex flex-wrap items-center gap-3 text-sm text-[#8391a7]">
@@ -324,38 +216,11 @@ function ProductDetailsPage() {
       </div>
 
       <div className="grid gap-9 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="grid gap-5 md:grid-cols-[90px_minmax(0,1fr)]">
-          <div className="order-2 flex gap-4 md:order-1 md:flex-col">
-            {galleryImages.map((image, index) => (
-              <button
-                key={`${image || 'empty'}-${index}`}
-                type="button"
-                onClick={() => setActiveImageIndex(index)}
-                className={`flex h-[92px] w-[92px] items-center justify-center overflow-hidden rounded-[0.7rem] border bg-[#f6f7fb] transition ${activeImageIndex === index ? 'border-[#b99f92] bg-[#b99f92]/15' : 'border-[#eceff5] hover:border-[#cfd6e2]'}`}
-              >
-                {image ? (
-                  <img src={image} alt={`${product.name} preview ${index + 1}`} className="h-full w-full object-contain p-2" />
-                ) : (
-                  <div className="h-full w-full bg-[#f2f4f8]" />
-                )}
-              </button>
-            ))}
-          </div>
-
-          <div className="order-1 relative overflow-hidden rounded-[1.75rem] bg-[#b99f92] p-8 md:order-2">
-            <button className="absolute left-4 top-1/2 z-20 flex h-[40px] w-[40px] -translate-y-1/2 items-center justify-center rounded-full bg-white text-[#3b475a] shadow-[0_10px_20px_rgba(17,24,39,0.08)]">
-              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m15 18-6-6 6-6" />
-              </svg>
-            </button>
-            <button className="absolute right-4 top-1/2 z-20 flex h-[40px] w-[40px] -translate-y-1/2 items-center justify-center rounded-full bg-white text-[#3b475a] shadow-[0_10px_20px_rgba(17,24,39,0.08)]">
-              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" />
-              </svg>
-            </button>
-            {galleryImages[activeImageIndex] ? (
+        <div>
+          <div className="relative overflow-hidden rounded-[1.75rem] bg-[#b99f92] p-8">
+            {product.image ? (
               <img
-                src={galleryImages[activeImageIndex]}
+                src={product.image}
                 alt={product.name}
                 className="mx-auto h-[20rem] sm:h-[30rem] md:h-[38rem] w-full max-w-[34rem] object-contain"
               />
@@ -490,44 +355,7 @@ function ProductDetailsPage() {
 
           <div className="mt-5 border-t border-dashed border-[#d8dee9]" />
 
-          <div className="mt-5 rounded-[1.25rem] border border-[#e7edf5] bg-[#f8fafc] p-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-[15px] font-semibold text-[#14213d]">Share this product</p>
-                <p className="text-[13px] text-[#627089]">Send it on Facebook or your favorite social channel.</p>
-              </div>
-              <button
-                type="button"
-                onClick={handleShareFallback}
-                className="inline-flex items-center gap-2 rounded-full border border-[#d8dee9] bg-white px-4 py-2 text-[14px] font-semibold text-[#14213d] transition hover:border-[#0f8b86] hover:text-[#0f8b86]"
-              >
-                <ShareIcon className="h-4 w-4" />
-                Share / Copy Link
-              </button>
-            </div>
-
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              {shareLinks.map((item) => (
-                <a
-                  key={item.id}
-                  href={item.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-full border border-[#d8dee9] bg-white px-4 py-2 text-[14px] font-semibold text-[#3b475a] transition hover:border-[#0f8b86] hover:text-[#0f8b86]"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
-
-            {copyStatus ? <p className="mt-3 text-[13px] font-medium text-[#0f8b86]">{copyStatus}</p> : null}
-          </div>
-
           <div className="mt-5 flex flex-wrap items-center gap-8 text-[16px] text-[#3b82f6]">
-            <button type="button" onClick={handleShareFallback} className="inline-flex items-center gap-2">
-              <ShareIcon className="h-4 w-4" />
-              Share
-            </button>
             <button type="button" className="inline-flex items-center gap-2">
               <CompareIcon className="h-4 w-4" />
               Compare
@@ -624,34 +452,6 @@ function ProductDetailsPage() {
               <p className="mt-4 text-[16px] leading-8 text-[var(--color-copy)]">
                 Shoppers consistently praise the product quality, pricing clarity, and reliable overall experience on the storefront.
               </p>
-              <div className="rounded-[1.25rem] border border-[#e6ebf2] bg-[#fcfdff] p-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-lg font-semibold text-[#14213d]">Facebook comments</h3>
-                    <p className="text-sm text-[#627089]">Customers can discuss this product directly on Facebook.</p>
-                  </div>
-                  <a
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-sm font-medium text-[#0f8b86] hover:underline"
-                  >
-                    Open in Facebook
-                  </a>
-                </div>
-                <iframe
-                  title={`Facebook comments for ${product.name}`}
-                  src={facebookCommentsUrl}
-                  className="mt-4 min-h-[420px] w-full rounded-[1rem] border border-[#e6ebf2] bg-white"
-                  scrolling="no"
-                />
-
-                {!FACEBOOK_APP_ID ? (
-                  <p className="mt-4 text-xs leading-6 text-[#7b8799]">
-                    Add `VITE_FACEBOOK_APP_ID` for a production-ready Facebook app configuration if your domain requires it.
-                  </p>
-                ) : null}
-              </div>
             </div>
           ) : null}
         </div>

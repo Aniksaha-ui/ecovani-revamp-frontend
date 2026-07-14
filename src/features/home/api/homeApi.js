@@ -536,6 +536,20 @@ async function requestEndpoint(endpoint, config = {}) {
   return extractArray(response.data)
 }
 
+export async function fetchHomeCategories() {
+  try {
+    const categoriesData = await requestEndpoint(HOME_ENDPOINTS.categories)
+
+    if (categoriesData.length) {
+      return categoriesData.map(normalizeCategory)
+    }
+  } catch {
+    // Fall back to static categories when the API is unavailable.
+  }
+
+  return fallbackCategories
+}
+
 export async function fetchHomePageData() {
   const [categoryResult, productResult] = await Promise.allSettled([
     requestEndpoint(HOME_ENDPOINTS.categories),

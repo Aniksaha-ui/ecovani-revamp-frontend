@@ -44,22 +44,21 @@ function HomeSectionTitle({ title, action = 'View More Products' }) {
 
 function ProductTabsSection({ title, tabs, activeTab = 0, children }) {
   return (
-    <section>
+    <section className="space-y-9">
       <RevealOnScroll delay={40}>
-        <div className="mb-10 text-center">
-          <h2 className="text-[34px] font-extrabold tracking-[-0.04em] text-[#14213d]">{title}</h2>
-          <div className="mx-auto mt-8 flex max-w-[690px] flex-wrap items-center justify-center gap-x-8 gap-y-3 border-b border-[#d9dfeb] pb-4">
+        <div className="text-center">
+          <h2 className="text-[28px] font-extrabold tracking-[-0.03em] text-[#14213d]">{title}</h2>
+          <div className="mx-auto mt-7 flex max-w-[980px] flex-wrap items-center justify-center gap-3">
             {tabs.map((item, index) => (
               <button
                 key={item}
-                className={`relative pb-3 text-[16px] font-semibold ${
-                  index === activeTab ? 'text-[#14213d]' : 'text-[#4d5d56]'
+                className={`rounded-full border px-5 py-3 text-[15px] font-semibold leading-none transition ${
+                  index === activeTab
+                    ? 'border-[#0f8b86] bg-[#0f8b86] text-white shadow-[0_10px_24px_rgba(15,139,134,0.18)]'
+                    : 'border-[#d9e1ec] bg-white text-[#1d2433] hover:border-[#0f8b86] hover:text-[#0f8b86]'
                 }`}
               >
                 {item}
-                {index === activeTab ? (
-                  <span className="absolute inset-x-0 bottom-[-5px] h-[2px] bg-[#14213d]" />
-                ) : null}
               </button>
             ))}
           </div>
@@ -67,6 +66,55 @@ function ProductTabsSection({ title, tabs, activeTab = 0, children }) {
       </RevealOnScroll>
       {children}
     </section>
+  )
+}
+
+function FeatureIcon({ type }) {
+  const common = {
+    className: 'h-7 w-7',
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: '1.8',
+  }
+
+  if (type === 'shipping') {
+    return (
+      <svg {...common}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h11v8H3zM14 10h3l3 3v2h-6z" />
+        <circle cx="7.5" cy="17" r="1.5" />
+        <circle cx="17.5" cy="17" r="1.5" />
+      </svg>
+    )
+  }
+
+  if (type === 'support') {
+    return (
+      <svg {...common}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 13v-1a8 8 0 1 1 16 0v1" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 13a2 2 0 0 0 2 2h1v-5H6a2 2 0 0 0-2 2Zm16 0a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 2Z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 19h1.5a2.5 2.5 0 0 0 2.5-2.5V15" />
+      </svg>
+    )
+  }
+
+  if (type === 'return') {
+    return (
+      <svg {...common}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 7h12M6 11h12M8 15h8" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 4h6l1 3H8l1-3Z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7 20h10a2 2 0 0 0 2-2V7H5v11a2 2 0 0 0 2 2Z" />
+      </svg>
+    )
+  }
+
+  return (
+    <svg {...common}>
+      <circle cx="12" cy="12" r="8" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l2.4 1.5" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.5 15.5c.8.5 1.6.8 2.5.8 2.8 0 5-2.2 5-5" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M14.5 8.5c-.7-.5-1.6-.8-2.5-.8-2.8 0-5 2.2-5 5" />
+    </svg>
   )
 }
 
@@ -85,6 +133,29 @@ function HomePage() {
   const brands = homepage.brands || []
   const categoryFavorites = homepage.categoryFavorites || []
   const latestBlog = homepage.latestBlog || []
+  const dailyDiscountProducts = flashDeal.products.slice(0, 6)
+  const benefitCards = [
+    {
+      type: 'shipping',
+      title: 'Free Shipping',
+      description: 'Enjoy the Convenience of Free Shipping on Every Order',
+    },
+    {
+      type: 'support',
+      title: '24x7 Support',
+      description: 'Round-the-Clock Assistance, Anytime You Need It',
+    },
+    {
+      type: 'return',
+      title: '30 Days Return',
+      description: 'Your Satisfaction is Our Priority: Return Any Product Within 30 Days',
+    },
+    {
+      type: 'payment',
+      title: 'Secure Payment',
+      description: 'Seamless Shopping Backed by Safe and Secure Payment Options',
+    },
+  ]
 
   return (
     <div className="space-y-8">
@@ -168,38 +239,44 @@ function HomePage() {
           </div>
         </RevealOnScroll>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          {(hero?.spotlightCards || []).map((card, index) => (
+      </section>
+
+      <section className="space-y-12 pt-2">
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          {benefitCards.map((item, index) => (
             <RevealOnScroll
-              key={`${card?.id || index}-promo`}
-              className="grid min-h-[190px] grid-cols-1 sm:grid-cols-[1fr_0.9fr] overflow-hidden rounded-[1.5rem] bg-white shadow-[0_16px_34px_rgba(36,54,46,0.08)] transition hover:-translate-y-1 hover:shadow-[0_22px_42px_rgba(36,54,46,0.1)]"
-              direction="right"
-              delay={index * 120}
+              as="article"
+              key={item.title}
+              className="rounded-[18px] border border-[#d8e0ea] bg-white px-8 py-5 text-center shadow-none"
+              delay={index * 70}
+              direction="zoom"
             >
-              <div className="p-5">
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#ff7e88]">
-                  {card?.eyebrow}
-                </p>
-                <h3 className="mt-3 text-2xl font-extrabold leading-tight text-[var(--color-heading)]">
-                  {card?.title}
-                </h3>
-                <p className="mt-3 text-sm leading-6 text-[var(--color-copy)]">
-                  {card?.description || 'Curated beauty basics for everyday use.'}
-                </p>
-                <button className="mt-5 rounded-full bg-[var(--color-accent)] px-4 py-2 text-xs font-bold text-white">
-                  {card?.ctaLabel || 'Shop Now'}
-                </button>
+              <div className="mx-auto flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#fff1ba] text-[#1d2433]">
+                <FeatureIcon type={item.type} />
               </div>
-              <div style={{ backgroundColor: card?.background || '#fcebd7' }} className="h-44 sm:h-auto">
-                <img
-                  src={card?.image || '/default-hero-banner.svg'}
-                  alt={card?.title || 'Store promo'}
-                  className="h-full w-full object-contain p-4"
-                />
-              </div>
+              <h3 className="mt-4 text-[18px] font-extrabold leading-none tracking-[-0.02em] text-[#1b2740]">
+                {item.title}
+              </h3>
+              <p className="mx-auto mt-3 max-w-[280px] text-[15px] leading-[1.45] text-[#334766]">
+                {item.description}
+              </p>
             </RevealOnScroll>
           ))}
         </div>
+
+        <RevealOnScroll as="section" delay={50}>
+          <div className="mb-8">
+            <h2 className="text-[28px] font-extrabold tracking-[-0.03em] text-[#1b2740]">
+              Daily Discount You'll Love
+            </h2>
+          </div>
+
+          <ProductGrid
+            products={dailyDiscountProducts}
+            variant="compact"
+            sectionLabel="Daily Discount"
+          />
+        </RevealOnScroll>
       </section>
 
       <section>
@@ -247,24 +324,42 @@ function HomePage() {
 
       <section className="grid gap-4 md:grid-cols-3">
         {[
-          { title: 'Your Daily Store.', copy: 'Reliable essentials for everyday routines.', bg: 'bg-[#9beb77]' },
-          { title: 'Everyday Made Simple.', copy: 'Curated tools for effortless self care.', bg: 'bg-[#f9b0cb]' },
-          { title: 'Your Cart. Your Way.', copy: 'Smart shopping with polished daily picks.', bg: 'bg-[#f4d7a5]' },
+          { title: 'Your Daily Store.', copy: 'Essentials, deals, and more.', bg: 'bg-[#9be86b]' },
+          { title: 'Everyday Made Simple.', copy: 'Quick, easy, and effortless.', bg: 'bg-[#f5c7e6]' },
+          { title: 'Your Cart. Your Way.', copy: 'All your favorites, in one click.', bg: 'bg-[#8fd8d7]' },
         ].map((promo, index) => (
           <RevealOnScroll
             as="article"
             key={promo.title}
-            className="overflow-hidden rounded-[1.5rem] bg-white shadow-[0_14px_30px_rgba(36,54,46,0.07)] transition hover:-translate-y-1 hover:shadow-[0_22px_40px_rgba(36,54,46,0.1)]"
+            className="relative overflow-hidden rounded-[18px] bg-white shadow-none transition hover:-translate-y-0.5 hover:shadow-[0_18px_34px_rgba(36,54,46,0.09)]"
             delay={index * 100}
             direction="zoom"
           >
-            <div className="h-52 bg-[#eef7f3]">
-              <img src={productImage(featurePromos[index])} alt={promo.title} className="h-full w-full object-cover" />
+            <div className="h-[496px] bg-[#eef4f6]">
+              <img
+                src={productImage(featurePromos[index])}
+                alt={promo.title}
+                className="h-full w-full object-cover"
+              />
             </div>
-            <div className={`p-5 ${promo.bg}`}>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--color-heading)]">Daily care</p>
-              <h3 className="mt-2 text-2xl font-extrabold text-[var(--color-heading)]">{promo.title}</h3>
-              <p className="mt-2 text-sm text-[var(--color-heading)]/72">{promo.copy}</p>
+            <div className={`absolute inset-x-[30px] bottom-[28px] rounded-[18px] px-[18px] pb-[18px] pt-[12px] ${promo.bg}`}>
+              <div className="inline-flex rounded-full bg-[#ffd65c] px-[18px] py-[8px] text-[14px] font-bold leading-none tracking-[-0.02em] text-[#1d2433]">
+                Enjoy 20% savings
+              </div>
+              <h3 className="mt-[14px] text-[29px] font-extrabold leading-[1.08] tracking-[-0.04em] text-[#14213d]">
+                {promo.title}
+              </h3>
+              <p className="mt-[10px] text-[17px] leading-[1.45] text-[#24344d]">
+                {promo.copy}
+              </p>
+              <button className="mt-[18px] inline-flex items-center gap-[10px] rounded-full bg-[#0f8b86] px-[18px] py-[10px] text-[15px] font-bold text-white shadow-[0_8px_18px_rgba(15,139,134,0.18)]">
+                <span>Shop Now</span>
+                <span className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-white text-[#0f8b86]">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7 17 17 7M9 7h8v8" />
+                  </svg>
+                </span>
+              </button>
             </div>
           </RevealOnScroll>
         ))}
@@ -330,7 +425,7 @@ function HomePage() {
         tabs={allProducts.tabs}
         activeTab={0}
       >
-        <ProductGrid products={allProducts.products} sectionLabel="Products" />
+        <ProductGrid products={allProducts.products.slice(0, 5)} variant="five-up" sectionLabel="Products" />
       </ProductTabsSection>
 
       <section className="elevated-section rounded-[1.8rem] bg-[#9ec5ff] p-5 shadow-[0_18px_38px_rgba(36,54,46,0.07)]">

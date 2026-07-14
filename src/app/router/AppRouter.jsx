@@ -4,6 +4,7 @@ import LoginPage from '../../features/auth/pages/LoginPage'
 import HomePage from '../../features/home/pages/HomePage'
 import ProductDetailsPage from '../../features/products/pages/ProductDetailsPage'
 import CategoryProductsPage from '../../features/products/pages/CategoryProductsPage'
+import SearchResultsPage from '../../features/products/pages/SearchResultsPage'
 import CartPage from '../../features/cart/pages/CartPage'
 import CheckoutPage from '../../features/checkout/pages/CheckoutPage'
 import PaymentSuccessPage from '../../features/payment/pages/PaymentSuccessPage'
@@ -27,6 +28,7 @@ function AppRouter() {
         <Route path="/payment/success" element={<PaymentSuccessPage />} />
         <Route path="/payment/failed" element={<PaymentFailedPage />} />
         <Route path="/categories/:categoryId/products" element={<CategoryProductsPage />} />
+        <Route path="/search" element={<SearchResultsPage />} />
         <Route path="/products/:productId" element={<ProductDetailsPage />} />
       </Route>
       <Route path="/login" element={<LoginPage />} />

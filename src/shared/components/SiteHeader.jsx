@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../features/auth/context/AuthContext'
 import { useCart } from '../../features/cart/context/CartContext'
 import { fetchHomeCategories } from '../../features/home/api/homeApi'
@@ -21,9 +21,13 @@ function ChevronIcon({ className = 'h-4 w-4' }) {
 function SiteHeader() {
   const { isAuthenticated, user, logout } = useAuth()
   const { itemCount } = useCart()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [searchParams] = useSearchParams()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false)
   const [categories, setCategories] = useState([])
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '')
   const categoryMenuRef = useRef(null)
 
   useEffect(() => {
@@ -47,6 +51,10 @@ function SiteHeader() {
   }, [])
 
   useEffect(() => {
+    setSearchTerm(location.pathname === '/search' ? searchParams.get('q') || '' : '')
+  }, [location.pathname, searchParams])
+
+  useEffect(() => {
     function handlePointerDown(event) {
       if (!categoryMenuRef.current?.contains(event.target)) {
         setIsCategoryMenuOpen(false)
@@ -68,6 +76,19 @@ function SiteHeader() {
     }
   }, [])
 
+  function handleSearchSubmit(event) {
+    event.preventDefault()
+
+    const normalizedQuery = searchTerm.trim()
+
+    if (!normalizedQuery) {
+      navigate('/search')
+      return
+    }
+
+    navigate(`/search?q=${encodeURIComponent(normalizedQuery)}`)
+  }
+
   return (
     <header className="w-full border-y border-[#d9dfeb] bg-white">
       <div className="h-[6px] bg-[#0f8b86]" />
@@ -87,19 +108,21 @@ function SiteHeader() {
 
           {/* Search Bar (Desktop only) */}
           <div className="hidden lg:flex flex-1 items-center justify-center max-w-[805px] mx-6">
-            <div className="relative w-full">
+            <form onSubmit={handleSearchSubmit} className="relative w-full">
               <input
                 type="text"
                 placeholder="Search for the Items"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
                 className="h-[58px] w-full rounded-full border border-[#d5dbe7] bg-white pl-8 pr-16 text-[16px] font-medium text-[#6f7d97] outline-none transition focus:border-[#0f8b86]"
               />
-              <div className="pointer-events-none absolute inset-y-0 right-6 flex items-center text-[#8d9ab1]">
+              <button type="submit" className="absolute inset-y-0 right-6 flex items-center text-[#8d9ab1] transition hover:text-[#0f8b86]" aria-label="Search products">
                 <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                   <circle cx="11" cy="11" r="7" />
                   <path strokeLinecap="round" d="m20 20-3.5-3.5" />
                 </svg>
-              </div>
-            </div>
+              </button>
+            </form>
           </div>
 
           {/* Actions (Desktop only) */}
@@ -210,19 +233,21 @@ function SiteHeader() {
 
       {/* Mobile Search Bar (Below top bar) */}
       <div className="block lg:hidden border-b border-[#d9dfeb] bg-[#f8fafc] px-4 py-3">
-        <div className="relative w-full max-w-[600px] mx-auto">
+        <form onSubmit={handleSearchSubmit} className="relative w-full max-w-[600px] mx-auto">
           <input
             type="text"
             placeholder="Search for the Items"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
             className="h-[46px] w-full rounded-full border border-[#d5dbe7] bg-white pl-6 pr-12 text-[14px] font-medium text-[#6f7d97] outline-none transition focus:border-[#0f8b86]"
           />
-          <div className="pointer-events-none absolute inset-y-0 right-5 flex items-center text-[#8d9ab1]">
+          <button type="submit" className="absolute inset-y-0 right-5 flex items-center text-[#8d9ab1] transition hover:text-[#0f8b86]" aria-label="Search products">
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
               <circle cx="11" cy="11" r="7" />
               <path strokeLinecap="round" d="m20 20-3.5-3.5" />
             </svg>
-          </div>
-        </div>
+          </button>
+        </form>
       </div>
 
       {/* Desktop Sub-navigation (Categories, Links, Support) */}

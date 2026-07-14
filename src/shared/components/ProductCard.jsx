@@ -79,7 +79,6 @@ function ProductCard({ product, variant = 'default' }) {
   const metaLabel = buildMetaLabel(product)
   const isTrending = variant === 'trending'
   const discountBadge = product.discountLabel || ''
-  const swatches = ['#c9a7ff', '#83a6ff', '#f6626c', '#ffd75f']
   const quantityInCart = getItemQuantity(product.id)
 
   async function handleAddToCart() {
@@ -158,86 +157,93 @@ function ProductCard({ product, variant = 'default' }) {
     )
   }
 
-  return (
-    <RevealOnScroll
-      as="article"
-      className="group flex flex-col overflow-hidden rounded-[1.25rem] border border-[#d8dee9] bg-white p-5 shadow-[0_8px_20px_rgba(17,24,39,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(17,24,39,0.08)]"
-      direction="zoom"
-    >
-      <Link to={`/products/${product.id}`} className="relative block overflow-hidden rounded-[1rem] bg-[#f5f4f7] p-4 transition-all">
-        {discountBadge ? (
-          <div className="absolute left-0 top-3 z-10 bg-[#d90429] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.04em] text-white">
-            {discountBadge}
-          </div>
-        ) : null}
+  if (variant === 'compact' || variant === 'default') {
+    return (
+      <RevealOnScroll
+        as="article"
+        className="group flex flex-col overflow-hidden rounded-[18px] border border-[#d9e1ec] bg-white p-[14px] shadow-none transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_26px_rgba(17,24,39,0.07)]"
+        direction="zoom"
+      >
+        <Link to={`/products/${product.id}`} className="relative block overflow-hidden rounded-[14px] bg-[#f7f7fb] p-[14px]">
+          {discountBadge ? (
+            <div className="absolute left-0 top-[10px] z-10 bg-[#d90429] px-[10px] py-[4px] text-[10px] font-extrabold uppercase leading-none tracking-[0.02em] text-white">
+              {discountBadge}
+            </div>
+          ) : null}
 
-        {productImage ? (
-          <img
-            src={productImage}
-            alt={product.name}
-            className="h-[258px] w-full object-contain transition-transform duration-700 group-hover:scale-105"
-          />
-        ) : (
-          <div className="h-[258px] w-full bg-slate-100" />
-        )}
-      </Link>
-
-      <div className="flex flex-1 flex-col pt-5">
-        <Link to={`/products/${product.id}`} className="mb-3 transition-colors hover:text-[var(--color-heading)]">
-          <h3 className="line-clamp-2 text-[18px] font-extrabold leading-[1.3] tracking-[-0.03em] text-[#14213d]">
-            {product.name}
-          </h3>
+          {productImage ? (
+            <img
+              src={productImage}
+              alt={product.name}
+              className="h-[182px] w-full object-contain transition-transform duration-700 group-hover:scale-105"
+            />
+          ) : (
+            <div className="h-[182px] w-full bg-slate-100" />
+          )}
         </Link>
 
-        <div className="mb-4 flex items-center gap-2 text-[14px] text-[#627089]">
-          <StarRating />
-          <span>({product.reviewCount || 189})</span>
-        </div>
+        <div className="flex min-w-0 flex-1 flex-col pt-4">
+          <div className="inline-flex w-fit items-center gap-1 rounded-[6px] bg-[#f4f6fa] px-[6px] py-[5px] text-[12px] font-medium leading-none text-[#5f6778]">
+            <svg className="h-[13px] w-[13px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h11v8H3zM14 10h3l3 3v2h-6z" />
+              <circle cx="7.5" cy="17" r="1.5" />
+              <circle cx="17.5" cy="17" r="1.5" />
+            </svg>
+            12-48 hours
+          </div>
 
-        <div className="mb-5 flex items-center gap-3">
-          {swatches.map((color) => (
-            <span key={color} className="flex h-9 w-9 items-center justify-center rounded-full border border-[#d8dee9] bg-white">
-              <span className="h-6 w-6 rounded-full" style={{ backgroundColor: color }} />
-            </span>
-          ))}
-        </div>
+          <p className="mt-4 line-clamp-1 text-[12px] font-medium text-[#5f6778]">
+            {metaLabel || 'Store Name/ Category'}
+          </p>
 
-        <div className="mt-auto">
-          <div className="flex items-baseline gap-3">
-            <span className="text-[20px] font-extrabold tracking-[-0.03em] text-[#14213d]">{product.price}</span>
+          <Link to={`/products/${product.id}`} className="mt-[10px] transition-colors hover:text-[var(--color-heading)]">
+            <h3 className="line-clamp-2 min-h-[58px] text-[15px] font-bold leading-[1.45] tracking-[-0.01em] text-[#2b3340]">
+              {product.name}
+            </h3>
+          </Link>
+
+          <div className="mt-3 flex items-center gap-[6px] text-[14px] text-[#627089]">
+            <StarRating />
+            <span>({product.reviewCount || 189})</span>
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-baseline gap-x-[10px] gap-y-1">
+            <span className="text-[16px] font-extrabold tracking-[-0.02em] text-[#1d2433]">{product.price}</span>
             {product.originalPrice && (
-              <span className="text-[16px] font-semibold text-[#97a3b8] line-through">
+              <span className="text-[14px] font-medium text-[#97a3b8] line-through">
                 {product.originalPrice}
               </span>
             )}
             {discountBadge ? (
-              <span className="text-[16px] font-medium text-[#d90429]">{discountBadge}</span>
+              <span className="text-[13px] font-medium uppercase tracking-[0.02em] text-[#d90429]">
+                {discountBadge}
+              </span>
             ) : null}
           </div>
 
-          <div className="mt-5 flex items-center gap-4">
+          <div className="mt-auto flex items-center gap-3 pt-4">
             <button
               type="button"
               aria-label={`Save ${product.name}`}
               onClick={(e) => e.preventDefault()}
-              className="flex h-[46px] w-[46px] items-center justify-center rounded-full border border-[#d8dee9] bg-white text-[#5d6b82] transition hover:border-[#0f8b86] hover:text-[#0f8b86]"
+              className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[#d8dee9] bg-white text-[#5d6b82] transition hover:border-[#0f8b86] hover:text-[#0f8b86]"
             >
-              <HeartIcon className="h-5 w-5" />
+              <HeartIcon className="h-4 w-4" />
             </button>
             <button
               type="button"
               onClick={handleAddToCart}
               disabled={isAdding}
-              className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-full bg-[#0f8b86] px-4 text-[16px] font-bold text-white shadow-[0_12px_22px_rgba(15,139,134,0.18)] transition hover:bg-[#0b7672] disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex h-[38px] flex-1 items-center justify-center gap-2 rounded-full bg-[#0f8b86] px-4 text-[14px] font-bold text-white transition hover:bg-[#0b7672] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <CartIcon className="h-4 w-4" />
               {isAdding ? 'Adding...' : quantityInCart ? `Add More (${quantityInCart})` : 'Add to Cart'}
             </button>
           </div>
         </div>
-      </div>
-    </RevealOnScroll>
-  )
+      </RevealOnScroll>
+    )
+  }
 }
 
 export default ProductCard

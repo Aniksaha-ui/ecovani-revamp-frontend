@@ -500,7 +500,7 @@ function buildHomepageSections(products, categories) {
     },
     allProducts: {
       title: 'Our Products',
-      tabs: ['All Products', 'Moisturizers', 'Sunscreen', 'Foundations', 'Lipsticks & Lip Gloss'],
+      tabs: ['All Products', 'Moisturizers', 'Sunscreens', 'Foundations', 'Lipsticks & Lip Glosses', 'Eyeshadows'],
       products: cycleItems(sourceProducts, 10, 1),
     },
     limitedDeal: {

@@ -188,3 +188,13 @@ export async function fetchCategoryProducts(categoryId) {
 
   return products.map((product, index) => normalizeProductSummary(product, index))
 }
+
+export async function fetchSearchProducts(query = '') {
+  const normalizedQuery = String(query || '').trim().toLowerCase()
+
+  const response = await apiClient.get(PRODUCTS_ENDPOINT, {
+    params: normalizedQuery ? { search: normalizedQuery } : undefined,
+  })
+
+  return extractArray(response.data).map((product, index) => normalizeProductSummary(product, index))
+}

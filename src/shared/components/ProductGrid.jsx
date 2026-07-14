@@ -6,7 +6,11 @@ function ProductGrid({ products, variant = 'default', sectionLabel = '' }) {
       className={
         variant === 'trending'
           ? 'grid gap-4 md:grid-cols-2 xl:grid-cols-3'
-          : 'grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5'
+          : variant === 'five-up'
+            ? 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
+          : variant === 'compact'
+            ? 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6'
+            : 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
       }
     >
       {products.map((product) => (

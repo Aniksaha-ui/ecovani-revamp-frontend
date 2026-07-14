@@ -8,17 +8,17 @@ export const contactPageContent = {
   contactMethods: [
     {
       title: 'Call us',
-      value: '+88 01700 000000',
+      value: '+8801628781323',
       description: 'Reach our support team for urgent order or account assistance.',
     },
     {
       title: 'Email us',
-      value: 'support@ecovani.store',
+      value: 'sahaanik1045@gmail.com',
       description: 'Best for detailed questions, partnership requests, and order follow-ups.',
     },
     {
       title: 'Visit us',
-      value: 'House 18, Road 10, Dhaka 1212',
+      value: 'Marul Badda, Dhaka, Bangladesh',
       description: 'Our operations team coordinates from this address during business hours.',
     },
   ],

@@ -29,14 +29,25 @@ function productImage(product) {
   return buildImageUrl(product?.imagePath || product?.image)
 }
 
-function HomeSectionTitle({ title, action = 'View More Products' }) {
+function productDetailsPath(product) {
+  if (!product?.id) {
+    return '/search'
+  }
+
+  return `/products/${product.id}`
+}
+
+function HomeSectionTitle({ title, action = 'View More Products', actionTo = '' }) {
   return (
     <div className="mb-5 flex items-center justify-between gap-4">
       <h2 className="text-[1.45rem] font-extrabold text-[var(--color-heading)]">{title}</h2>
       {action.trim() ? (
-        <button className="rounded-full border border-[#d7e6df] bg-white px-4 py-2 text-xs font-bold text-[var(--color-accent)] transition hover:-translate-y-0.5 hover:border-[var(--color-accent)] hover:shadow-[0_10px_22px_rgba(36,54,46,0.08)]">
+        <Link
+          to={actionTo || '/search'}
+          className="rounded-full border border-[#d7e6df] bg-white px-4 py-2 text-xs font-bold text-[var(--color-accent)] transition hover:-translate-y-0.5 hover:border-[var(--color-accent)] hover:shadow-[0_10px_22px_rgba(36,54,46,0.08)]"
+        >
           {action}
-        </button>
+        </Link>
       ) : null}
     </div>
   )
@@ -206,7 +217,7 @@ function HomePage() {
               </p>
               <div className="mt-8">
                 <Link
-                  to="/"
+                  to={productDetailsPath(flashDeal.products[0] || mostLoved.products[0] || newLaunch.products[0])}
                   className="inline-flex items-center gap-4 rounded-full bg-[#0f8b86] px-5 py-4 text-[16px] font-extrabold text-white shadow-[0_14px_28px_rgba(15,139,134,0.22)]"
                 >
                   <span>{hero?.primaryCta || 'Shop Now'}</span>
@@ -317,7 +328,7 @@ function HomePage() {
 
       <section>
         <RevealOnScroll delay={40}>
-          <HomeSectionTitle title={mostLoved.title} />
+          <HomeSectionTitle title={mostLoved.title} actionTo={productDetailsPath(mostLoved.products[0])} />
         </RevealOnScroll>
         <ProductGrid products={mostLoved.products} sectionLabel="Most Loved" />
       </section>
@@ -352,14 +363,17 @@ function HomePage() {
               <p className="mt-[10px] text-[17px] leading-[1.45] text-[#24344d]">
                 {promo.copy}
               </p>
-              <button className="mt-[18px] inline-flex items-center gap-[10px] rounded-full bg-[#0f8b86] px-[18px] py-[10px] text-[15px] font-bold text-white shadow-[0_8px_18px_rgba(15,139,134,0.18)]">
+              <Link
+                to={productDetailsPath(featurePromos[index])}
+                className="mt-[18px] inline-flex items-center gap-[10px] rounded-full bg-[#0f8b86] px-[18px] py-[10px] text-[15px] font-bold text-white shadow-[0_8px_18px_rgba(15,139,134,0.18)]"
+              >
                 <span>Shop Now</span>
                 <span className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-white text-[#0f8b86]">
                   <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M7 17 17 7M9 7h8v8" />
                   </svg>
                 </span>
-              </button>
+              </Link>
             </div>
           </RevealOnScroll>
         ))}
@@ -415,7 +429,7 @@ function HomePage() {
 
       <section className="elevated-section rounded-[1.8rem] bg-[#ffe25b] p-5 shadow-[0_18px_38px_rgba(36,54,46,0.07)]">
         <RevealOnScroll delay={40}>
-          <HomeSectionTitle title={newLaunch.title} action="View More Products" />
+          <HomeSectionTitle title={newLaunch.title} action="View More Products" actionTo={productDetailsPath(newLaunch.products[0])} />
         </RevealOnScroll>
         <ProductGrid products={newLaunch.products} sectionLabel="New" />
       </section>
@@ -432,7 +446,7 @@ function HomePage() {
         <RevealOnScroll delay={40}>
           <div className="mb-5 flex items-center justify-between">
             <h2 className="text-[1.45rem] font-extrabold text-[var(--color-heading)]">{limitedDeal.title}</h2>
-            <button className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[var(--color-accent)]">View Products</button>
+            <Link to={productDetailsPath(limitedDeal.featured)} className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[var(--color-accent)]">View Products</Link>
           </div>
         </RevealOnScroll>
         <div className="grid gap-4 lg:grid-cols-[0.95fr_1.35fr]">
@@ -442,7 +456,7 @@ function HomePage() {
             </div>
             <h3 className="mt-5 text-2xl font-extrabold text-[var(--color-heading)]">Stay Fit. Stay Healthy.</h3>
             <p className="mt-2 text-sm leading-7 text-[var(--color-copy)]">Promote best-value essentials with simplified offer messaging.</p>
-            <button className="mt-4 rounded-full bg-[var(--color-accent)] px-4 py-2 text-sm font-bold text-white">Explore More</button>
+            <Link to={productDetailsPath(limitedDeal.featured)} className="mt-4 inline-flex rounded-full bg-[var(--color-accent)] px-4 py-2 text-sm font-bold text-white">Explore More</Link>
           </article>
           <div className="grid gap-4">
             {[
@@ -463,7 +477,7 @@ function HomePage() {
                         <p className="line-clamp-1 text-sm font-bold text-[var(--color-heading)]">{product.name}</p>
                         <p className="mt-1 text-xs text-[var(--color-copy-soft)]">{product.price}</p>
                       </div>
-                      <button className="rounded-full bg-[var(--color-accent)] px-3 py-2 text-xs font-bold text-white">Add</button>
+                      <Link to={productDetailsPath(product)} className="rounded-full bg-[var(--color-accent)] px-3 py-2 text-xs font-bold text-white">View</Link>
                     </div>
                   ))}
                 </div>
@@ -523,7 +537,7 @@ function HomePage() {
 
       <section className="elevated-section rounded-[1.8rem] bg-[#b8efe7] p-5 shadow-[0_18px_38px_rgba(36,54,46,0.07)]">
         <RevealOnScroll delay={40}>
-          <HomeSectionTitle title={beautyCare.title} action="View More Products" />
+          <HomeSectionTitle title={beautyCare.title} action="View More Products" actionTo={productDetailsPath(beautyCare.products[0])} />
         </RevealOnScroll>
         <ProductGrid products={beautyCare.products} sectionLabel="Beauty" />
       </section>
@@ -555,9 +569,9 @@ function HomePage() {
                 <p className="mt-2 text-sm leading-6 text-[var(--color-copy)]">
                   {product.name}
                 </p>
-                <button className="mt-4 rounded-full bg-[var(--color-accent)] px-4 py-2 text-xs font-bold text-white">
+                <Link to={productDetailsPath(product)} className="mt-4 inline-flex rounded-full bg-[var(--color-accent)] px-4 py-2 text-xs font-bold text-white">
                   Read More
-                </button>
+                </Link>
               </div>
             </RevealOnScroll>
           ))}

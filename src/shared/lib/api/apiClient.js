@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { getStoredAuthToken } from '../../../features/auth/lib/authStorage'
 
+const AUTH_UNAUTHENTICATED_EVENT = 'auth:unauthenticated'
+
 const baseURL = (import.meta.env.VITE_BASE_URL || '')
   .replaceAll('"', '')
   .replace(/\s+/g, '')
@@ -36,4 +38,21 @@ apiClient.interceptors.request.use((config) => {
   return config
 })
 
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const errorMessage = error?.response?.data?.message
+
+    if (
+      typeof window !== 'undefined' &&
+      errorMessage === 'Unauthenticated.'
+    ) {
+      window.dispatchEvent(new CustomEvent(AUTH_UNAUTHENTICATED_EVENT))
+    }
+
+    return Promise.reject(error)
+  },
+)
+
+export { AUTH_UNAUTHENTICATED_EVENT }
 export default apiClient

@@ -1,10 +1,11 @@
-import { createContext, useContext, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { loginRequest } from '../api/authApi'
 import {
   clearStoredAuthSession,
   readStoredAuthSession,
   writeStoredAuthSession,
 } from '../lib/authStorage'
+import { AUTH_UNAUTHENTICATED_EVENT } from '../../../shared/lib/api/apiClient'
 
 const AuthContext = createContext(null)
 
@@ -28,6 +29,23 @@ function buildErrorMessage(error) {
 
 function AuthProvider({ children }) {
   const [session, setSession] = useState(() => readStoredAuthSession())
+
+  useEffect(() => {
+    function handleUnauthenticated() {
+      setSession(null)
+      clearStoredAuthSession()
+
+      if (window.location.pathname !== '/login') {
+        window.location.replace('/login')
+      }
+    }
+
+    window.addEventListener(AUTH_UNAUTHENTICATED_EVENT, handleUnauthenticated)
+
+    return () => {
+      window.removeEventListener(AUTH_UNAUTHENTICATED_EVENT, handleUnauthenticated)
+    }
+  }, [])
 
   const value = useMemo(() => ({
     isAuthenticated: Boolean(session?.token),
